@@ -1,26 +1,20 @@
 ﻿//USEUNIT resultFile
 function printResult(msg) {
-
   Log.Message(msg);
   aqFile.WriteToTextFile(resultsFile, "<tr><td> " + msg + " </td><td><font color='#006633'></font></td></tr>", 22, false);
 }
 
 function printResultCenter(msg) {
-
   Log.Message(msg);
   aqFile.WriteToTextFile(resultsFile, "<tr><td align = 'center'> " + msg + " </td><td><font color='#006633'></font></td></tr>", 22, false);
 }
 
 function printResultResult(rslt, msg) {
   try {
-
     if (rslt == "Pass") {
-
       Log.Message("Pass: " + msg);
       aqFile.WriteToTextFile(resultsFile, "<tr><td> " + msg + " </td><td><font color='#006633'>Pass</font></td></tr>", 22, false);
-
     } else {
-
       Log.Message("Fail: " + msg);
       aqFile.WriteToTextFile(resultsFile, "<tr><td> " + msg + " </td><td><font color='#FF0000'>Fail</font></td></tr>", 22, false);
     }
@@ -32,11 +26,9 @@ function printResultResult(rslt, msg) {
 function resultVOS(ele, msg) {
   try { // the item should not be visible on the screen. This function checks for that. 
     if (ele.VisibleOnScreen) {
-
       Log.Message("Fail: " + msg);
       aqFile.WriteToTextFile(resultsFile, "<tr><td> " + msg + " </td><td><font color='#FF0000'>Fail</font></td></tr>", 22, false);
     } else {
-
       Log.Message("Pass: " + msg);
       aqFile.WriteToTextFile(resultsFile, "<tr><td> " + msg + " </td><td><font color='#006633'>Pass</font></td></tr>", 22, false);
 
@@ -47,10 +39,6 @@ function resultVOS(ele, msg) {
 }
 
 function resultChildCountCompare(cc1, val, msg) {
-
-  cc1 = cc1
-  val = val
-  msg = msg
   Log.Message(cc1)
   Log.Message(val)
   try {
@@ -68,10 +56,6 @@ function resultChildCountCompare(cc1, val, msg) {
 }
 
 function resultTxt(txt, txt1, msg) {
-
-  txt = txt
-  txt1 = txt1
-  msg = msg
   Log.Message(txt)
   Log.Message(txt1)
   try {
@@ -89,10 +73,6 @@ function resultTxt(txt, txt1, msg) {
 }
 
 function resultTxtNotEmpty(txt, msg) {
-
-  txt = txt
-
-  msg = msg
   Log.Message(txt)
   try {
     if (txt != "") {
@@ -108,9 +88,6 @@ function resultTxtNotEmpty(txt, msg) {
   }
 }
 function resultTxtNotEmpty1(txt, msg) {
-
-  txt = txt
-  msg = msg
   Log.Message(txt)
   try {
     if (txt != -1) {
@@ -126,9 +103,7 @@ function resultTxtNotEmpty1(txt, msg) {
   }
 }
 function resultImg(pic, img, msg) {
-
   storedImg = Regions.GetPicture(img);
-
   try {
     if (storedImg.Compare(pic), 5) {
       Log.Message("Pass: " + msg);
@@ -143,7 +118,6 @@ function resultImg(pic, img, msg) {
 }
 
 function resultTxtIncludes(txt, txt1, msg) {
-
   try {
     Log.Message(txt)
     Log.Message(txt1)
@@ -160,7 +134,6 @@ function resultTxtIncludes(txt, txt1, msg) {
 }
 
 function resultTxtFind(txt, txt1, msg) {
-
   try {
     Log.Message(txt)
     Log.Message(txt1)
@@ -178,9 +151,7 @@ function resultTxtFind(txt, txt1, msg) {
 }
 
 function printCatch(msg, msg1) {
-
   try {
-
     var Res = aqString.Find(txt, txt1);
     if (Res != -1) {
       Log.Message("Pass: " + msg);
@@ -192,9 +163,4 @@ function printCatch(msg, msg1) {
   } catch (e) {
     Log.Message(e.message)
   }
-
-
-
-
-
 } 

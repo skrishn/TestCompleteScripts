@@ -1,13 +1,12 @@
 ﻿//USEUNIT compareResults
 //USEUNIT drawOnMap
-//USEUNIT buffer
 //USEUNIT compareAnalysisLayer
-//USEUNIT buttons
+//USEUNIT widgetUtils
 //USEUNIT startOver
 //USEUNIT incidentTab
-//USEUNIT openPanel
 //USEUNIT featureActionMenu
-//USEUNIT search
+//USEUNIT utils
+
 function common(b, env) {
 
   location(b, env)
@@ -21,7 +20,7 @@ function location(b, env) {
 
     //Batavia park
     compareResults.printResultCenter("Incident - Point")
-    drawOnMap.point(1191, 285)
+    drawOnMap.draw('point', [1191, 285]);
 
     //Click on the map to add an Existing feature
     addExistingFeature("Middle River")
@@ -29,10 +28,11 @@ function location(b, env) {
     //incidentTab.clickIncidentTab()
 
     compareResults.printResultCenter("Incident - Point with Buffer")
-    buffer.doBuffer(2)
+    widgetUtils.doBuffer(2);
     getPanelArray = compareAnalysisLayer.getAnalysisLayer(b, "Download")
     //incidentTab.clickIncidentTab()
-    buttons.home()
+    widgetUtils.home.Click();
+    Delay(800);
 
     compareResults.printResultCenter("Incident - Line")
 
@@ -41,16 +41,17 @@ function location(b, env) {
 
     //easy baltimore midway	
 
-    drawOnMap.line(824, 214, 990, 219);
+    drawOnMap.draw("line", [[824, 214], [990, 219]]);
     Delay(300)
     //Click on the map to add an Existing feature
     addExistingFeature("Middle River")
     getPanelArray = compareAnalysisLayer.getAnalysisLayer(b, "noDownload")
 
     compareResults.printResultCenter("Incident - Line with Buffer")
-    buffer.doBuffer(2)
+    widgetUtils.doBuffer(2);
     getPanelArray = compareAnalysisLayer.getAnalysisLayer(b, "Download")
-    buttons.home()
+    widgetUtils.home.Click();
+    Delay(800);
 
     compareResults.printResultCenter("Incident - Polygon")
     //startover
@@ -58,7 +59,7 @@ function location(b, env) {
 
     //POrt of Baltimore, Dundalk	
     Delay(500)
-    drawOnMap.polyg(1101, 463, 1104, 324, 1222, 327, 1227, 464, 1100, 463);
+    drawOnMap.draw("poly", [[1101, 463], [1104, 324], [1222, 327], [1227, 464], [1100, 463]]);
     Delay(300)
 
     //Click on the map to add an Existing feature
@@ -67,9 +68,10 @@ function location(b, env) {
     //incidentTab.clickIncidentTab()
 
     compareResults.printResultCenter("Incident - Polygon with Buffer")
-    buffer.doBuffer(2)
+    widgetUtils.doBuffer(2);
     getPanelArray = compareAnalysisLayer.getAnalysisLayer(b, "Download")
-    buttons.home()
+    widgetUtils.home.Click();
+    Delay(800);
 
   } catch (e) {
     y = aqString.Concat("Locate incident ", e)
@@ -79,19 +81,26 @@ function location(b, env) {
 }
 
 function addExistingFeature(srchTxt) {
-
   try {
-
     // Drop a an incident by clicking on map
-    search.clickSearch(srchTxt)
-    featureActionMenu.clickFAMenu()
+    clickSearch(srchTxt)
+    featureActionMenu.clickFAMenu();
     featureActionMenu.loopPopupMenu("Add/Remove Location")
 
     featureActionMenu.loopPopupMenu("Set Location")
   } catch (e) {
-
     y = aqString.Concat("Add existing feature ", e)
     compareResults.printResult(y)
+  }
+}
 
+function clickSearch(txt) {
+  try {
+    widgetUtils.search.Click();
+    widgetUtils.search.SetText(txt);
+    Utils.clickEnter();
+  } catch (e) {
+    y = aqString.Concat("Search ", e)
+    comapreResults.printResult(y)
   }
 }

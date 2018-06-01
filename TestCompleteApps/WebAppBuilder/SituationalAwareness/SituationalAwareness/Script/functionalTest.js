@@ -10,11 +10,9 @@ function tests(name, b, env) {
       Sys.Desktop.Keys("[Enter]")
       rst = widget.openWidget()
       Log.Message("rst in functionality " + rst)
-      if (rst == "yes") {
+      if (rst) {
         defineLocation.common(b, env)
-        //existingFeature.common(b,env)
       } else {
-
         compareResults.printResultResult("Fail", "Open widget")
       }
     }

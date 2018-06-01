@@ -208,6 +208,10 @@ function stopLogging() {
 
 ///////////////////////////////////
 //From SA
+function clickEnter(){
+  Sys.Keys("[Enter]");
+}
+
 function openIt() {
 
   ForReading = 1;

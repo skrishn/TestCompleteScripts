@@ -1,4 +1,6 @@
-﻿//Provide access to common widgets to make code more readable and easy to reference the individual widgets
+﻿//USEUNIT compareResults
+
+//Provide access to common widgets to make code more readable and easy to reference the individual widgets
 // IF these need to be delayed will need to move set to a function like "init"
 
 //Private members
@@ -47,6 +49,20 @@ var user;
 
 //Common Login Form Password
 var password;
+
+//Situation Awareness controls
+var unit;
+var numberSpinner;
+var _widgetPanel;
+var _btnContainer;
+var pageTable;
+var search;
+var save;
+var where;
+var deleteButton;
+var btn0;
+var btn1;
+var btn2;
 
 function initLogin(){
   var loginContainer = Sys.Browser("*").Page("*").Panel("container");
@@ -129,7 +145,20 @@ function _initInfoSummary(theme){
 function _initSituationAwareness(theme){
   switch (theme){
     case 'FoldableTheme':
-      break;
+      testWidget = _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(1);
+      _widgetPanel = testWidget.Panel(0).Panel(0).Panel(2).Panel(1).Panel(0).Panel(1);
+      unit = _widgetPanel.Panel(0);
+      numberSpinner = _widgetPanel.Panel("widget_dijit_form_NumberSpinner_*");
+      search = map.Panel("widgets_Search_Widget_*").Panel(0).Panel("esri_dijit_Search_*").Panel(0).Panel(0).Panel(0).Panel(0).Form(0).Textbox("esri_dijit_Search_*_input");
+      save = testWidget.Panel(0).Panel(1).Panel(0).Image("save_png");
+      pageTable = Sys.Browser("*").Page("*").Panel(1).Form(0).Table(0);
+      where = pageTable.Cell(0, 1).Textbox("where");
+      deleteButton = pageTable.Cell(8, 0).SubmitButton("Delete Features");
+      _btnContainer = testWidget.Panel(0).Panel(0).Panel(2).Panel(0).Panel(0);
+      btn0 = _btnContainer.Image("btn0_png");
+      btn1 = _btnContainer.Image("btn1_png");
+      btn2 = _btnContainer.Image("btn2_png");
+      break;     
   }
 }
 
@@ -154,3 +183,65 @@ function initPopup(){
   popupHeader = _basePopupPath.Panel(0).Panel(0).Panel(1);
   popupNext = _basePopupPath.Panel(0).Panel(0).Panel(3);
 }
+
+//////////////////////////////////////////////////////////////////////////////////
+//SA specific
+function bufferUnit(myUnit) {
+  try {
+    getUnit = unit.contentText;
+    buMsg = aqString.Concat("Buffer units - ", myUnit);
+    compareResults.resultTxt(getUnit, myUnit, buMsg); //TODO comparisons should not happen in widgetUtils
+  } catch (e) {
+    y = aqString.Concat("Buffer unit ", e);
+    compareResults.printResult(y); //TODO comparisons should not happen in widgetUtils
+  }
+}
+
+function doBuffer(bufferCount) {
+  try {
+    upArrow = numberSpinner.Panel(0).Panel(0).Panel(0);
+    for (i = 0; i < bufferCount; i++) {
+      upArrow.Click();
+    }
+    //Click somewhere to apply the buffer
+    testWidget.Panel(0).Panel(0).Click(119, 5);
+  } catch (e) {
+    y = aqString.Concat("Buffer ", e);
+    compareResults.printResult(y); //TODO comparisons should not happen in widgetUtils
+  }
+}
+
+function drawPoint(coords) {
+  //Will only draw the first coords
+  btn0.Click();
+  mapDIV.Click(coords[0], coords[1]);
+}
+
+function drawLine(coords) {
+  btn1.Click();
+  _drawCoords(coords);
+}
+
+function drawPoly(coords) {
+  btn2.Click();
+
+  //ensure the poly is closed
+  var startX = coords[0][0];
+  var startY = coords[0][1];
+  var endX = coords[coords.length - 1][0];
+  var endY = coords[coords.length - 1][1];
+  if(startX != endX || startY != endY){
+    coords.push([startX, startY]);
+  }
+  _drawCoords(coords);
+}
+
+function _drawCoords(coords){
+  Delay(75);
+  for (var i = 0; i < coords.length; i++) {
+    var func = i + 1 == coords.length ? mapDIV.DblClick : mapDIV.Click;
+    func(coords[i][0], coords[i][1]);
+    Delay(50);
+  }
+}
+//////////////////////////////////////////////////////////////////////////////////

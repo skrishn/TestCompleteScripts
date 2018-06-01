@@ -1,7 +1,6 @@
 ﻿//USEUNIT compareResults
 //USEUNIT openReadFile
 function incidentDownload(b, getPanelArray, demoConcat, hospConcat, schConcat, shelConcat, emeConcat, bridgeCount, rdBlockCount, rdClosure) {
-
   try {
     // delete all the files
     delAllFiles()
@@ -20,7 +19,6 @@ function incidentDownload(b, getPanelArray, demoConcat, hospConcat, schConcat, s
 }
 
 function resultsDownload(panels, panelsCT, b, num, dName) {
-
   try {
     Delay(1000)
     delAllFiles()
