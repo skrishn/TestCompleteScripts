@@ -37,3 +37,17 @@ function resultImg(pic, img, msg) {
 function resultTxtIncludes(txt, txt1, msg) {
   resultFile.writePassFailLine(txt.includes(txt1), msg);
 }
+////////////////////////////////////////////////////////////
+//from SA
+////////////////////////////////////////////////////////////
+function resultTxtNotEmpty(txt, msg) {
+  resultFile.writePassFailLine(txt != "", msg);
+}
+
+function resultTxtNotEmpty1(txt, msg) {
+  resultFile.writePassFailLine(txt != -1, msg);
+}
+
+function resultTxtFind(txt, txt1, msg) {
+  resultFile.writePassFailLine(aqString.Find(txt, txt1) != -1, msg);
+}
