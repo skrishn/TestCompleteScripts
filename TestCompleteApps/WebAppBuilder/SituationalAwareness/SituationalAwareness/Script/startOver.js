@@ -4,7 +4,7 @@
 function clickStartOver() {
   try {
     //TODO figure out what this is and move to widgetUtils
-    startOver = widgetUtils.testWidget.Panel(0).Panel(0).Panel(1);
+    var startOver = widgetUtils.testWidget.Panel(0).Panel(0).Panel(1);
     startOver.Click();
     Sys.Refresh();
     Log.Message(startOver.Visible);
@@ -23,7 +23,6 @@ function clickStartOver() {
       compareResults.printResultResult(b0 && b1 && b2 ? "Pass" : "Fail", "Buttons are inactive");
     }
   } catch (e) {
-    y = aqString.Concat("Startover", e);
-    compareResults.printResult(y);
+    compareResults.printResult(aqString.Concat("Startover", e));
   }
 }

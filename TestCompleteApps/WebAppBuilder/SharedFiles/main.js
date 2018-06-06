@@ -21,12 +21,10 @@ function runTests(type) {
         
       //Run widget tests
       host.tests.forEach(function(t){
-        try
-        {
+        try{
           t.test(app.themeName);
         }
-        catch (err)
-        {
+        catch (err){
           Log.Warning(err.message);
         }    
       });

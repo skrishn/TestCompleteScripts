@@ -1,11 +1,8 @@
 ﻿//USEUNIT compareResults
 var w = 0, d = 0, ww, dd;
-//Log.Message("Now w " +w + "   "+ d)
 
 function openFiles(getFileName, b, num) {
-
   try {
-    getFileName = getFileName
     myFolder = aqFileSystem.FindFiles("C:\\Users\\suba6982\\Downloads\\", "*.csv");
     myFile0 = aqString.Concat("C:\\Users\\suba6982\\Downloads\\", getFileName)
     myFile = aqString.Concat(myFile0, ".csv")

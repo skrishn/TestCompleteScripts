@@ -63,6 +63,7 @@ var deleteButton;
 var btn0;
 var btn1;
 var btn2;
+var panel;
 
 function initLogin(){
   var loginContainer = Sys.Browser("*").Page("*").Panel("container");
@@ -145,6 +146,7 @@ function _initInfoSummary(theme){
 function _initSituationAwareness(theme){
   switch (theme){
     case 'FoldableTheme':
+      panel = _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(0).Panel(1).Panel(0)
       testWidget = _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(1);
       _widgetPanel = testWidget.Panel(0).Panel(0).Panel(2).Panel(1).Panel(0).Panel(1);
       unit = _widgetPanel.Panel(0);
@@ -244,4 +246,83 @@ function _drawCoords(coords){
     Delay(50);
   }
 }
+
+function draw(type, coords){
+  try {
+    var func = type == "point" ? drawPoint : type == "line" ? drawLine : drawPoly;
+    func(coords);
+  } catch (e) {
+    compareResults.printResult(aqString.Concat("Draw " + type + " ", e)); //TODO comparisons should not happen in widgetUtils
+  }
+}
+
+function clickIncidentTab() {
+  var inciTab = _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(0).Panel(1).Panel(0).Panel(0);
+  inciTab.Click();
+}
+
+/////////////////////
+//Feature Action
+////////////////////
+function clickFAMenu() {
+  try {
+    var panel = map.Panel("map_root").Panel(1).Panel(0).Panel(2).Panel(0).Panel(0);
+    var ellipsis = panel.FindChildByXPath("//span [@class='popup-menu-button']");
+    var x = panel.Width - ellipsis.offsetWidth / 2;
+    var y = ellipsis.offsetHeight / 2;
+    panel.Click(x, y);
+  } catch (e) {
+    y = aqString.Concat("Click ellipsis ", e);
+    compareResults.printResult(y);//TODO comparisons should not happen in widgetUtils
+  }
+}
+
+function loopPopupMenu(clickItem) {
+  try {
+    Delay(300);
+    popupMenu = Sys.Browser("*").Page("*").Panel(0).Panel(0).Panel(1);
+    myItem = popupMenu.FindChild("contentText", clickItem, 7);
+    myItem.Click();
+    /*popupMenuCC = popupMenu.ChildCount;
+    for(i = 0; i<popupMenuCC ; i++){
+            popupMenu.fin;
+            myItem = popupMenu.Child(i);
+            Delay(300);
+            myItemCT = myItem.
+            Delay(250);
+            if(myItemCT == clickItem) {
+                    myItem0 = myItem.Panel(1);
+                    myItem0.Click();
+                    compareResults.printResultResult("Pass", clickItem);
+                    break;
+            } 																
+    } */
+  } catch (e) {
+    y = aqString.Concat("Add location ", e);
+    compareResults.printResult(y);//TODO comparisons should not happen in widgetUtils
+  }
+}
+
+function addLocation() {
+  try {
+    //TODO see what we can do about that hardcoded name
+    Sys.Browser("*").Page("*").Panel(0).Panel(0).Panel(1).Panel("uniqName_0_83").Panel(1).Click();
+    compareResults.printResultResult("Pass", "Add location");
+  } catch (e) {
+    y = aqString.Concat("Add location ", e);
+    compareResults.printResult(y);//TODO comparisons should not happen in widgetUtils
+  }
+}
+
+function setLocation() {
+  try {
+    //TODO see what we can do about that hardcoded name
+    Sys.Browser("*").Page("*").Panel(0).Panel(0).Panel(1).Panel("uniqName_0_84").Panel(1).Click();
+    compareResults.printResultResult("Pass", "Add location");
+  } catch (e) {
+    y = aqString.Concat("Set location ", e);
+    compareResults.printResult(y);//TODO comparisons should not happen in widgetUtils
+  }
+}
+
 //////////////////////////////////////////////////////////////////////////////////

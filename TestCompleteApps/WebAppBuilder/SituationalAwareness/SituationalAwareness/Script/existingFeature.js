@@ -1,10 +1,7 @@
 ﻿//USEUNIT compareResults
-//USEUNIT drawOnMap
 //USEUNIT compareAnalysisLayer
 //USEUNIT widgetUtils
 //USEUNIT startOver
-//USEUNIT incidentTab
-//USEUNIT featureActionMenu
 //USEUNIT utils
 
 function common(b, env) {
@@ -20,17 +17,17 @@ function location(b, env) {
 
     //Batavia park
     compareResults.printResultCenter("Incident - Point")
-    drawOnMap.draw('point', [1191, 285]);
+    widgetUtils.draw('point', [1191, 285]);
 
     //Click on the map to add an Existing feature
     addExistingFeature("Middle River")
     getPanelArray = compareAnalysisLayer.getAnalysisLayer(b, "noDownload")
-    //incidentTab.clickIncidentTab()
+    //widgetUtils.clickIncidentTab()
 
     compareResults.printResultCenter("Incident - Point with Buffer")
     widgetUtils.doBuffer(2);
     getPanelArray = compareAnalysisLayer.getAnalysisLayer(b, "Download")
-    //incidentTab.clickIncidentTab()
+    //widgetUtils.clickIncidentTab()
     widgetUtils.home.Click();
     Delay(800);
 
@@ -41,7 +38,7 @@ function location(b, env) {
 
     //easy baltimore midway	
 
-    drawOnMap.draw("line", [[824, 214], [990, 219]]);
+    widgetUtils.draw("line", [[824, 214], [990, 219]]);
     Delay(300)
     //Click on the map to add an Existing feature
     addExistingFeature("Middle River")
@@ -59,13 +56,13 @@ function location(b, env) {
 
     //POrt of Baltimore, Dundalk	
     Delay(500)
-    drawOnMap.draw("poly", [[1101, 463], [1104, 324], [1222, 327], [1227, 464], [1100, 463]]);
+    widgetUtils.draw("poly", [[1101, 463], [1104, 324], [1222, 327], [1227, 464], [1100, 463]]);
     Delay(300)
 
     //Click on the map to add an Existing feature
     addExistingFeature("Rosedale, MD, USA")
     getPanelArray = compareAnalysisLayer.getAnalysisLayer(b, "noDownload")
-    //incidentTab.clickIncidentTab()
+    //widgetUtils.clickIncidentTab()
 
     compareResults.printResultCenter("Incident - Polygon with Buffer")
     widgetUtils.doBuffer(2);
@@ -84,10 +81,10 @@ function addExistingFeature(srchTxt) {
   try {
     // Drop a an incident by clicking on map
     clickSearch(srchTxt)
-    featureActionMenu.clickFAMenu();
-    featureActionMenu.loopPopupMenu("Add/Remove Location")
+    widgetUtils.clickFAMenu();
+    widgetUtils.loopPopupMenu("Add/Remove Location")
 
-    featureActionMenu.loopPopupMenu("Set Location")
+    widgetUtils.loopPopupMenu("Set Location")
   } catch (e) {
     y = aqString.Concat("Add existing feature ", e)
     compareResults.printResult(y)
