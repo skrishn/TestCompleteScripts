@@ -64,6 +64,7 @@ var btn0;
 var btn1;
 var btn2;
 var panel;
+var tabsContainer;
 
 function initLogin(){
   var loginContainer = Sys.Browser("*").Page("*").Panel("container");
@@ -188,6 +189,10 @@ function initPopup(){
 
 //////////////////////////////////////////////////////////////////////////////////
 //SA specific
+function getTabsContainer(){
+  tabsContainer = widgetUtils._layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1);
+}
+
 function bufferUnit(myUnit) {
   try {
     getUnit = unit.contentText;

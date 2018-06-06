@@ -1,225 +1,158 @@
 ﻿//USEUNIT compareResults
 //USEUNIT downloadUtils
-//USEUNIT openReadFile
 
-//let children, seniors, totalPopulation, hospAddr, no_of_students, schoolCount, shelterCount, totalCapacity, no_of_beds, currCapacity; 
-//let emerCount, medReq, animalPresent, transPlan, evaPlan, bridgeCount, rdBlockCount, rdClosure;
-let demoConcat = "", hospConcat = "", schConcat = "", shelConcat = "", emeConcat = "", bridgeCount = "", rdBlockCount = "", rdClosure = "";
+let demoConcat = "", hospConcat = "", schConcat = "", shelConcat = "", emeConcat = "";
+let bridgeCount = "", rdBlockCount = "", rdClosure = "";
 
-//Project.Variables.AddVariable("MyVar", "String");*/
-var pfn, panels
-function getAnalysisLayer(b, dn) {
+function getAnalysisLayer(b, download) {
   try {
     Delay(500)
-    var saPanel = widgetUtils.panel;
-    var saPanelCC = saPanel.ChildCount;
-    var getPanelArray = [];
-    if (saPanelCC > 1) {
-      for (i = saPanelCC - 1; i >= 0; i--) {
-        panels = saPanel.Child(i)
-        pfn = panels.FullName
-        panelsCT = panels.contentText
-        if (panels.className == "SATTab") {
-          if (panelsCT != "Incident") {
-            panels.Click()
-            if (panelsCT == "Demographics") {
-              getPanelArray.push(panelsCT)
-              checkResultsTab(panels, panelsCT, b, "demo")
+    widgetUtils.getTabsContainer();
+    var cnt = widgetUtils.panel.ChildCount;
+    var panels = [];
+    if (cnt > 1) {
+      for (i = cnt - 1; i >= 0; i--) {
+        var panel = widgetUtils.panel.Child(i);
+        var panelText = panel.contentText;
+        if (panel.className == "SATTab") {
+          if (panelText != "Incident") {
+            panel.Click();
+            //TODO why is Demographics handled differently??
+            // curious why the commented section below could not replace this...testTab would also need to be updated
+            // if the names are no longer updated by us
+            // var name = panelText.replace(/[^a-zA-Z]/g, '');
+            // var num_features = panelText.replace(/[^0-9]/g, '');
+            // panels.push(name);
+            // testTab(panel, name, b, num_features);
+
+            if (panelText == "Demographics") {
+              panels.push(panelText);
+              testTab(panel, panelText, b, "demo");
             } else {
-              var currentPanelName = panelsCT.replace(/[^a-zA-Z]/g, '');
-              var num_features = panelsCT.replace(/[^0-9]/g, '');
-              if (currentPanelName == "EmergencyAssistance") {
-                cpn = currentPanelName.replace("EmergencyAssistance", "Emergency Assistance")
-                currentPanelName = cpn
-              } else if (currentPanelName == "RoadBlocks") {
-                cpn = currentPanelName.replace("RoadBlocks", "Road Blocks")
-                currentPanelName = cpn
-              } else {
-                if (currentPanelName == "RoadClosures") {
-                  cpn = currentPanelName.replace("RoadClosures", "Road Closures")
-                  currentPanelName = cpn
-                }
+              //TODO what is all this
+              //Look and see why the space is being added..??
+              //If that can be skipped we can delete this stuff and simplify the name tests in testTab
+              var name = panelText.replace(/[^a-zA-Z]/g, '');
+              var num_features = panelText.replace(/[^0-9]/g, '');
+              if (name == "EmergencyAssistance") {
+                name = name.replace("EmergencyAssistance", "Emergency Assistance");
+              } else if (name == "RoadBlocks") {
+                name = name.replace("RoadBlocks", "Road Blocks");
+              } else if (name == "RoadClosures") {
+                name = name.replace("RoadClosures", "Road Closures");
               }
-              getPanelArray.push(currentPanelName)
-              checkResultsTab(panels, currentPanelName, b, num_features)
+              panels.push(name);
+              testTab(panel, name, b, num_features);
             }
           }
         }
       }
 
-      widgetUtils.clickIncidentTab()
-      if (dn == "Download") {
-        compareResults.printResult("Download ")
-        downloadUtils.incidentDownload(b, getPanelArray, demoConcat, hospConcat, schConcat, shelConcat, emeConcat, bridgeCount, rdBlockCount, rdClosure)
+      widgetUtils.clickIncidentTab();
+      if (download == "Download") {
+        compareResults.printResult("Download ");
+        downloadUtils.incidentDownload(b, panels, demoConcat, hospConcat, schConcat, shelConcat,
+          emeConcat, bridgeCount, rdBlockCount, rdClosure);
       }
     }
-    return getPanelArray
+    return panels;
   } catch (e) {
-    y = aqString.Concat("Analysis layer", e)
-    compareResults.printResult(y)
-  }
-}
-function checkResultsTab(pfn, currentPanelName, b, num_features) {
-
-  try {
-    if (currentPanelName == "Demographics") {
-      compareResults.printResultCenter(currentPanelName)
-      // the three tabs - check heading and value
-      ip1 = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(3).Panel(0)
-
-      children = ip1.Panel(1).Panel(1).contentText
-      msg1 = aqString.Concat("Age<14 - ", children)
-      compareResults.resultTxtNotEmpty(children, msg1)
-
-      seniors = ip1.Panel(2).Panel(1).contentText
-      msg1 = aqString.Concat("Age>65 - ", seniors)
-      compareResults.resultTxtNotEmpty(seniors, msg1)
-
-      totalPopulation = ip1.Panel(3).Panel(1).contentText
-      msg1 = aqString.Concat("Total population - ", totalPopulation)
-      compareResults.resultTxtNotEmpty(totalPopulation, msg1)
-      demoConcat = children + "," + seniors + "," + totalPopulation
-      downloadUtils.resultsDownload(panels, currentPanelName, b, "demo", "btnExport download")
-    }
-
-    if (currentPanelName != "Demographics") {
-
-      if (currentPanelName == "Hospitals") {
-        compareResults.printResultCenter(currentPanelName)
-        hospitalCount = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(4).Panel(0).Panel(1).Panel(0).Panel(0).contentText
-
-        hospPanel = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(4).Panel(0)
-        hospPanelcc = hospPanel.ChildCount
-        hosps = hospPanelcc - 1
-        compareResults.resultTxt(hosps, num_features, "Hospitals - Count in header and panel matches")
-
-        hospAddr = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(4).Panel(0).Panel(1).Panel(1).contentText
-        compareResults.resultTxtNotEmpty(hospAddr, "Address displays")
-        //Project.Variables.hospConcat = aqString.Concat(children, ",", seniors, ",", totalPopulation)
-        Log.Message(hospAddr)
-        hospConcat = hospAddr.replace(/\n|\r/g, ',');
-        Log.Message(hospConcat)
-        Log.Message("")
-
-        if (Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(4).Panel(0).Panel(1).Panel(0).Panel(1).Exists == true) {
-
-          dist = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(4).Panel(0).Panel(1).Panel(0).Panel(1).contentText
-          txtFind = aqString.Find(dist, "(approximate)")
-          resultTxtNotEmpty1(hospitalCount, "Points incident - distance and duration")
-
-        } else {
-          compareResults.printResult("Line and polygon incidents - no distance and duration")
-
-        }
-        downloadUtils.resultsDownload(panels, currentPanelName, b, num_features, "btnExport")
-
-      }
-      if (aqString.Find(currentPanelName, "Schools") != -1) {
-
-        compareResults.printResultCenter(currentPanelName)
-        schoolCount = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(5).Panel(0).Panel(1).Panel(1).contentText
-        compareResults.resultTxt(schoolCount, num_features, "Count in header and panel matches")
-
-        no_of_students = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(5).Panel(0).Panel(2).Panel(1).contentText
-        msg1 = aqString.Concat("No of students - ", no_of_students)
-        compareResults.resultTxtNotEmpty(no_of_students, msg1)
-        downloadUtils.resultsDownload(panels, currentPanelName, b, num_features, "btnExport download")
-        schConcat = schoolCount + "," + no_of_students
-
-      }
-      if (aqString.Find(currentPanelName, "Shelters") != -1) {
-
-        compareResults.printResultCenter(currentPanelName)
-        shelterCount = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(6).Panel(0).Panel(1).Panel(1).contentText
-        compareResults.resultTxt(shelterCount, num_features, "Count in header and panel matches")
-
-        totalCapacity = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(6).Panel(0).Panel(2).Panel(1).contentText
-        msg1 = aqString.Concat("Total capacity - ", totalCapacity)
-        compareResults.resultTxtNotEmpty(totalCapacity, msg1)
-
-        no_of_beds = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(6).Panel(0).Panel(3).Panel(1).contentText
-        msg1 = aqString.Concat("No of beds available - ", no_of_beds)
-        compareResults.resultTxtNotEmpty(no_of_beds, msg1)
-
-        currCapacity = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(6).Panel(0).Panel(4).Panel(1).contentText
-        msg1 = aqString.Concat("Current capacity - ", currCapacity)
-        compareResults.resultTxtNotEmpty(currCapacity, msg1)
-        downloadUtils.resultsDownload(panels, currentPanelName, b, num_features, "btnExport download")
-
-        shelConcat = shelterCount + "," + totalCapacity + "," + no_of_beds + "," + currCapacity
-      }
-      if (aqString.Find(currentPanelName, "Emergency Assistance") != -1) {
-
-        compareResults.printResultCenter(currentPanelName)
-        emerCount = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(7).Panel(0).Panel(1).Panel(1).contentText
-        compareResults.resultTxt(emerCount, num_features, "Count in header and panel matches")
-
-        medReq = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(7).Panel(0).Panel(2).Panel(1).contentText
-        msg1 = aqString.Concat("Medication required - ", medReq)
-        compareResults.resultTxtNotEmpty(medReq, msg1)
-
-        animalPresent = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(7).Panel(0).Panel(3).Panel(1).contentText
-        msg1 = aqString.Concat("Service animal present - ", animalPresent)
-        compareResults.resultTxtNotEmpty(animalPresent, msg1)
-
-        transPlan = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(7).Panel(0).Panel(4).Panel(1).contentText
-        msg1 = aqString.Concat("Transportation required - ", transPlan)
-        compareResults.resultTxtNotEmpty(transPlan, msg1)
-
-
-        evaPlan = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(7).Panel(0).Panel(5).Panel(1).contentText
-        msg1 = aqString.Concat("Evacuation plan present - ", evaPlan)
-        compareResults.resultTxtNotEmpty(evaPlan, msg1)
-        downloadUtils.resultsDownload(panels, currentPanelName, b, num_features, "btnExport download")
-
-        emeConcat = emerCount + "," + medReq + "," + animalPresent + "," + transPlan + "," + evaPlan
-        Log.Message(emeConcat)
-        Log.Message("")
-      }
-      if (aqString.Find(currentPanelName, "Bridges") != -1) {
-
-        compareResults.printResultCenter(currentPanelName)
-        bridgeCount = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(8).Panel(0).Panel(1).Panel(1).contentText
-        compareResults.resultTxt(bridgeCount, num_features, "Count in header and panel matches")
-        downloadUtils.resultsDownload(panels, currentPanelName, b, num_features, "btnExport download")
-      }
-      if (aqString.Find(currentPanelName, "Road Blocks") != -1) {
-        compareResults.printResultCenter(currentPanelName)
-        rdBlockCount = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(9).Panel(0).Panel(1).Panel(1).contentText
-        compareResults.resultTxt(rdBlockCount, num_features, "Count in header and panel matches")
-        downloadUtils.resultsDownload(panels, currentPanelName, b, num_features, "btnExport download")
-
-      } else {
-        if (aqString.Find(currentPanelName, "Road Closures") != -1) {
-          compareResults.printResultCenter(currentPanelName)
-          rdClosure = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(10).Panel(0).Panel(1).Panel(1).contentText
-          compareResults.resultTxt(rdClosure, num_features, "Count in header and panel matches")
-          downloadUtils.resultsDownload(panels, currentPanelName, b, num_features, "btnExport download")
-        }
-      }
-    }
-  } catch (e) {
-    y = aqString.Concat("Eval results ", e)
-    compareResults.printResult(y)
+    compareResults.printResult(aqString.Concat("Analysis layer", e));
   }
 }
 
-function innerPanel(currentPanel, currentPanelName) {
+function testTab(panel, name, b, num_features) {
   try {
-    getCT = []
-    currentPanel0 = currentPanel.Panel(0)
-    getCC = currentPanel0.ChildCount
-    for (i = getCC - 1; i >= 0; i--) {
+    compareResults.printResultCenter(name);
 
-      panelChild = currentPanel0.Child(i)
-      ignorePanel = "Panel(0)";
-      if (panelChild.Name != ignorePanel) {
-        getCT = panelChild.Panel(0).Panel(0).contentText
-        checkResultsTab(getCt, currentPanelName)
-      }
+    if (name == "Demographics") {
+      demoConcat = demographics();
+    } else if (name == "Hospitals") {
+      hospConcat = hospitals();
+    } else if (name.indexOf("Schools") > -1) {
+      schConcat = schools();
+    } else if (name.indexOf("Shelters") > -1) {
+      shelConcat = shelters();
+    } else if (name.indexOf("Emergency Assistance") > -1) {
+      emeConcat = emergencyAssistance();
+    } else if (name.indexOf("Bridges") > -1) {
+      bridges();
+    } else if (name.indexOf("Road Blocks") > -1) {
+      roadBlocks();
+    } else if (name.indexOf("Road Closures") > -1) {
+      roadClosures();
     }
+    
+    downloadUtils.resultsDownload(panel, name, b, num_features, "btnExport download");
   } catch (e) {
-    y = aqString.Concat("Inner panel ", e)
-    compareResults.printResult(y)
+    compareResults.printResult(aqString.Concat("Eval results ", e));
   }
+}
+
+function demographics(){
+  var concatTexts = ["Age<14 - ", "Age>65 - ", "Total population - "];
+  return testText(3, 1, concatTexts);
+}
+
+function hospitals(){
+  var panel = widgetUtils.tabsContainer.Panel(4).Panel(0);
+
+  testCount();
+  
+  var addr = panel.Panel(1).Panel(1).contentText;
+  compareResults.resultTxtNotEmpty(addr, "Address displays");
+
+  var distPanel = panel.Panel(1).Panel(0);
+  if (distPanel.Panel(1).Exists == true) {
+    var txtFind = aqString.Find(distPanel.Panel(1).contentText, "(approximate)");
+    compareResults.resultTxtNotEmpty1(distPanel.Panel(0).contentText, "Points incident - distance and duration");
+  } else {
+    compareResults.printResult("Line and polygon incidents - no distance and duration");
+  }
+
+  return addr.replace(/\n|\r/g, ',');
+}
+
+function schools(){
+  var concatTexts = ["No of students - "];
+  return testText(5, 2, concatTexts);
+}
+
+function shelters(){
+  var concatTexts = ["Total capacity - ", "No of beds available - ", "Current capacity - "];
+  return testText(6, 2, concatTexts);
+}
+
+function emergencyAssistance(){ 
+  var concatTexts = ["Medication required - ", "Service animal present - ",
+    "Transportation required - ", "Evacuation plan present - "];
+  return testText(7, 2, concatTexts);
+}
+
+function bridges(){
+  testCount(8);
+}
+
+function roadBlocks(){
+  testCount(9);
+}
+
+function testCount(i){
+  var count = widgetUtils.tabsContainer.Panel(i).Panel(0).Panel(1).Panel(1).contentText;
+  compareResults.resultTxt(count, num_features, "Count in header and panel matches");
+  return count;
+}
+
+function testText(index, baseIndex, concatTexts){
+  var tab = widgetUtils.tabsContainer.Panel(index);
+  var appends = [testCount(index)];
+  for (var i = baseIndex; i <= concatTexts.length + baseIndex; i++) {
+    var concatText = concatTexts[i - baseIndex];
+    var v = tab.Panel(0).Panel(i).Panel(1).contentText;
+    var msg = aqString.Concat(concatText, v)
+    compareResults.resultTxtNotEmpty(v, msg);
+    appends.push(v);
+  }
+
+  return appends.join(",");
 }
