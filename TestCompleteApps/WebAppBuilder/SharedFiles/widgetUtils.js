@@ -65,6 +65,7 @@ var btn1;
 var btn2;
 var panel;
 var tabsContainer;
+var downloadAll;
 
 function initLogin(){
   var loginContainer = Sys.Browser("*").Page("*").Panel("container");
@@ -161,6 +162,24 @@ function _initSituationAwareness(theme){
       btn0 = _btnContainer.Image("btn0_png");
       btn1 = _btnContainer.Image("btn1_png");
       btn2 = _btnContainer.Image("btn2_png");
+      downloadAll = testWidget.Panel(0).Panel(1).Panel(1).Image("download_all_png");
+      //Does this work...could be a nice way to keep widget specific functions
+      // that need to determine something based on current state with other options that are avalible
+      // when the widget opens...
+      getResultTab = function(){
+        return _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1);
+      }
+      getIENotificationBar = function(){
+        var notificationBar = Sys.Browser("iexplore").BrowserWindow(0).Window("Frame Notification Bar", "", 1).UIAObject("Notification");
+        return { 
+          bar: notificationBar,
+          Notification_Save: notificationBar.UIAObject("Save"),
+          Notification_Close: notificationBar.UIAObject("Close")
+        };
+      }
+      getNotificationBar = function(){
+        return Aliases.browser.BrowserWindow.FrameNotificationBar;
+      }
       break;     
   }
 }

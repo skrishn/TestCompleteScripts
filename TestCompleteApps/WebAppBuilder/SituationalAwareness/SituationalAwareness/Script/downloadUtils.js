@@ -1,114 +1,99 @@
 ﻿//USEUNIT compareResults
 //USEUNIT openReadFile
+//USEUNIT downloadAll
+
 function incidentDownload(b, getPanelArray, demoConcat, hospConcat, schConcat, shelConcat, emeConcat, bridgeCount, rdBlockCount, rdClosure) {
   try {
-    // delete all the files
-    delAllFiles()
-    downloadAll = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(1).Panel(0).Panel(1).Panel(1).Image("download_all_png")
-    downloadAll.Click()
+    delAllFiles();
+    widgetUtils.downloadAll.Click();  
     if (b == "iexplore") {
-      downloadAllIncidents()
+      downloadAllIncidents();
     }
-    Delay(2000)
-    openReadFile.findFiles(getPanelArray)
-    openReadFile.getSummaryFile(getPanelArray, demoConcat, hospConcat, schConcat, shelConcat, emeConcat, bridgeCount, rdBlockCount, rdClosure)
+    Delay(2000);
+    openReadFile.findFiles(getPanelArray);
+    openReadFile.getSummaryFile(getPanelArray, demoConcat, hospConcat, schConcat, shelConcat, emeConcat, bridgeCount, rdBlockCount, rdClosure);
   } catch (e) {
-    y = aqString.Concat("Download ", e)
-    compareResults.printResult(y)
+    compareResults.printResult(aqString.Concat("Download ", e))
   }
 }
 
 function resultsDownload(panels, panelsCT, b, num, dName) {
   try {
-    Delay(1000)
-    delAllFiles()
+    Delay(1000);
+    delAllFiles();
     //When a results tab is open - this panel is seen
-    rsltTabPanel = Sys.Browser("*").Page("*").Panel("main_page").Panel("jimu_layout_manager").Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1)
-    rsltTabPanelCC = rsltTabPanel.ChildCount
-    for (i = rsltTabPanelCC - 1; i >= 0; i--) {
+    var resultTab  = widgetUtils.getResultTab();
+    for (i = resultTab.ChildCount - 1; i >= 0; i--) {
       //Find the panel that has children
-      activePanel = rsltTabPanel.Child(i)
+      var activePanel = resultTab.Child(i);
       if (activePanel.Visible == true) {
-        downloadButton = activePanel.Panel(0).Panel(0).Panel(0)
-        downloadButton.Click()
+        downloadButton = activePanel.Panel(0).Panel(0).Panel(0);
+        downloadButton.Click();
         if (b == "iexplore") {
-          rsltDownload()
+          rsltDownload();
         }
-        openReadFile.openFiles(panelsCT, b, num)
+        openReadFile.openFiles(panelsCT, b, num);
         break;
       }
     }
   } catch (e) {
-    y = aqString.Concat("Download ", e)
-    compareResults.printResult(y)
+    compareResults.printResult(aqString.Concat("Download ", e));
   }
 }
 
 function rsltDownload() {
   try {
-
-    frameNotificationBar = Sys.Browser("iexplore").BrowserWindow(0).Window("Frame Notification Bar", "", 1).UIAObject("Notification")
-    frameNotificationBar.Refresh();
-    //frameNotificationBar.RefreshMappingInfo();
-    var saveDialog = frameNotificationBar.UIAObject("Save")
-    //saveDialog.RefreshMappingInfo();
+    var notificationBar = widgetUtils.getIENotificationBar();
+    notificationBar.bar.Refresh();
+    
+    var saveDialog = notificationBar.Notification_Save;
     if (!saveDialog.Exists) {
-      //break;
-      Log.Message("ting ting ting")
+      throw "saveDialog does not exist";
     }
     saveDialog.Click();
-
-    frameNotificationBar.Refresh();
-    //frameNotificationBar.RefreshMappingInfo();
-    var closeDialog = frameNotificationBar.UIAObject("Close")
-    //closeDialog.RefreshMappingInfo();
-    if (!(closeDialog.Exists && closeDialog.VisibleOnScreen)) {
-      //break;
-      Log.Message("ting ting ting")
+    
+    notificationBar.Refresh();
+    
+    var closeDialog = notificationBar.Notification_Close;
+    if (!closeDialog.Exists && !closeDialog.VisibleOnScreen) {
+      throw "closeDialog does not exist or is not visible";
     }
-
     closeDialog.Click();
-    // image.Click(5, 14);
-    //svg.HoverMouse(1060, 73);
-    //browserWindow.Close();
   } catch (e) {
-    y = aqString.Concat("rsltDownload ", e)
-    compareResults.printResult(y)
+    compareResults.printResult(aqString.Concat("rsltDownload ", e));
   }
 }
 
 function downloadAllIncidents() {
   try {
-    browser = Aliases.browser;
-    browserWindow = browser.BrowserWindow;
-    frameNotificationBar = browserWindow.FrameNotificationBar;
+    var notificationBar = widgetUtils.getNotificationBar();
 
+    //TODO what are these about...almost seems like one could consolidate the above
+    // with this function and just handle differently for IE
+    //Is this empty loop just so the break statement could be used??
     for (; ;) {
-      frameNotificationBar.Refresh();
-      frameNotificationBar.RefreshMappingInfo();
-      var saveDialog = frameNotificationBar.Notification_Save;
+      notificationBar.Refresh();
+      notificationBar.RefreshMappingInfo();     
+      var saveDialog = notificationBar.Notification_Save;
       saveDialog.RefreshMappingInfo();
       if (!saveDialog.Exists) {
         break;
       }
-
       saveDialog.Save.Click();
     }
 
     for (; ;) {
-      frameNotificationBar.Refresh();
-      frameNotificationBar.RefreshMappingInfo();
-      var closeDialog = frameNotificationBar.Notification_Close;
+      notificationBar.Refresh();
+      notificationBar.RefreshMappingInfo();
+      var closeDialog = notificationBar.Notification_Close;
       closeDialog.RefreshMappingInfo();
       if (!(closeDialog.Exists && closeDialog.VisibleOnScreen)) {
         break;
       }
-
       closeDialog.Close.Click();
     }
   } catch (e) {
-    y = aqString.Concat("downloadAllIncidents ", e)
-    compareResults.printResult(y)
+    compareResults.printResult(aqString.Concat("downloadAllIncidents ", e));
   }
 }
 
