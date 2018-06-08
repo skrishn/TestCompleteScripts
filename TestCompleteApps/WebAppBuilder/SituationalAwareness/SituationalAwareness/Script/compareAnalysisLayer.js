@@ -57,7 +57,7 @@ function getAnalysisLayer(b, download) {
     }
     return panels;
   } catch (e) {
-    compareResults.printResult(aqString.Concat("Analysis layer", e));
+    compareResults.printResult("Analysis layer" + e);
   }
 }
 
@@ -85,7 +85,7 @@ function testTab(panel, name, b, num_features) {
     
     downloadUtils.resultsDownload(panel, name, b, num_features, "btnExport download");
   } catch (e) {
-    compareResults.printResult(aqString.Concat("Eval results ", e));
+    compareResults.printResult("Eval results " + e);
   }
 }
 
@@ -149,8 +149,7 @@ function testText(index, baseIndex, concatTexts){
   for (var i = baseIndex; i <= concatTexts.length + baseIndex; i++) {
     var concatText = concatTexts[i - baseIndex];
     var v = tab.Panel(0).Panel(i).Panel(1).contentText;
-    var msg = aqString.Concat(concatText, v)
-    compareResults.resultTxtNotEmpty(v, msg);
+    compareResults.resultTxtNotEmpty(v, concatText + v);
     appends.push(v);
   }
 

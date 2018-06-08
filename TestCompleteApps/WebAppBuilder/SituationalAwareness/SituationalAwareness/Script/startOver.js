@@ -23,6 +23,6 @@ function clickStartOver() {
       compareResults.printResultResult(b0 && b1 && b2 ? "Pass" : "Fail", "Buttons are inactive");
     }
   } catch (e) {
-    compareResults.printResult(aqString.Concat("Startover", e));
+    compareResults.printResult("Startover" + e);
   }
 }

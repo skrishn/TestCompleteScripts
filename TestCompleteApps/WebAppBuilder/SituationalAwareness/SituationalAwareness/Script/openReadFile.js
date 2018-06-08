@@ -9,8 +9,7 @@ function openFiles(name, b, num) {
     readFile(name, file, num);
     deleteFile(file);
   } catch (e) {
-    y1 = aqString.Concat("Open file ", name);
-    compareResults.printResult(aqString.Concat(y1, e));
+    compareResults.printResult("Open file " + name + " " + e);
   }
 }
 
@@ -32,7 +31,7 @@ function findFiles(panels) {
       deleteFile(file); //TODO what was this??
     }
   } catch (e) {
-    compareResults.printResult(aqString.Concat("Find files ", e));
+    compareResults.printResult("Find files " + e);
   }
 }
 
@@ -42,7 +41,7 @@ function getSummaryFile(getPanelArray, demoConcat, hospConcat, schConcat, shelCo
     readSummaryFile(file, getPanelArray, demoConcat, hospConcat, schConcat, shelConcat, emeConcat, bridgeCount, rdBlockCount, rdClosure);
     deleteFile(file);
   } catch (e) {
-    compareResults.printResult(aqString.Concat("Get summary file ", e));
+    compareResults.printResult("Get summary file " + e);
   }
 }
 
@@ -99,7 +98,7 @@ function readSummaryFile(file, getPanelArray, demoConcat, hospConcat, schConcat,
     d = 0;
     f.Close();
   } catch (e) {
-    compareResults.printResult(aqString.Concat("Read summary file ", e));
+    compareResults.printResult("Read summary file " + e);
   }
 }
 
@@ -126,9 +125,7 @@ function compare1(clmn, str) {
     }
     return w;
   } catch (e) {
-    alert("does concat do exactly what it sounds like??");
-    alert(aqString.Concat("Compare summary file fields ", e) == "Compare summary file fields " + e);
-    compareResults.printResult(aqString.Concat("Compare summary file fields ", e))
+    compareResults.printResult("Compare summary file fields " + e);
   }
 }
 
@@ -144,7 +141,7 @@ function compare2(values, concats) {
     }
     return d;
   } catch (e) {
-    compareResults.printResult(aqString.Concat("Compare summary file values ", e))
+    compareResults.printResult("Compare summary file values " + e);
   }
 }
 
@@ -192,7 +189,7 @@ function readFile(name, file, num) {
       f.Close();
     }
   } catch (e) {
-    compareResults.printResult(aqString.Concat("Read analysis file ", e));
+    compareResults.printResult("Read analysis file " + e);
   }
 }
 

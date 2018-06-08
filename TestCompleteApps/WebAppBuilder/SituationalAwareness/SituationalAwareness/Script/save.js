@@ -11,8 +11,7 @@ function saveBtn(env, type) {
       compareResults.printResultResult("Fail", "No save button");
     }
   } catch (e) {
-    y = aqString.Concat("Save ", e);
-    compareResults.printResult(y);
+    compareResults.printResult("Save " + e);
   }
 }
 
@@ -53,8 +52,7 @@ function checkFeaturesSimple(env, type) {
     //close tab
     Sys.Keys("^w")
   } catch (e) {
-    y = aqString.Concat("Check features simple ", e)
-    compareResults.printResult(y)
+    compareResults.printResult("Check features simple " + e);
   }
 }
 
@@ -63,11 +61,9 @@ function checkResult() {
     featuresResult = Sys.Browser("*").Page("https://servicesdev.arcgis.com/ZjAWRvdlnNLJ42Xt/arcgis/rest/services/SituationalAwareness_WFL1/FeatureServer/*").Panel(1).TextNode(0).contentText
     Log.Message(featuresResult)
     var rslt = featuresResult.replace(/[^0-9]/g, '');
-    y = aqString.Concat("Feature saved - ", rslt);
-    compareResults.printResultResult((rslt == 1 || rslt > 1) ? "Pass" : "Fail", y);
+    compareResults.printResultResult((rslt == 1 || rslt > 1) ? "Pass" : "Fail", "Feature saved - " + rslt);
   } catch (e) {
-    y = aqString.Concat("Check result", e);
-    compareResults.printResult(y);
+    compareResults.printResult("Check result" + e);
   }
 }
 
@@ -81,10 +77,10 @@ function query(url) {
   queryBtn.Click();
   rslt0 = Sys.Browser("*").Page("*").Panel(1).TextNode(0).contentText;
   var rslt = rslt0.replace(/[^0-9]/g, '');
-  y = aqString.Concat("Feature saved - ", rslt);
-  compareResults.printResultResult((rslt == 1 || rslt > 1) ? "Pass" : "Fail", y);
+  compareResults.printResultResult((rslt == 1 || rslt > 1) ? "Pass" : "Fail", "Feature saved - " + rslt);
   Delay(1000);
 }
+
 function delFeatures(url) {
   Browsers.CurrentBrowser.Navigate(url);
   Delay(1000);
@@ -92,6 +88,7 @@ function delFeatures(url) {
   widgetUtils.deleteButton.Click();
   Delay(1000);
 }
+
 function openNewTab(url) {
   Sys.Keys("^t");
   Browsers.CurrentBrowser.Navigate(url);

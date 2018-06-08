@@ -67,6 +67,7 @@ var panel;
 var tabsContainer;
 var downloadAll;
 
+//This function handles login for the main shield page when logging into DEV or QA
 function initLogin(){
   var loginContainer = Sys.Browser("*").Page("*").Panel("container");
   if(loginContainer && loginContainer.Panel){
@@ -112,6 +113,7 @@ function init(widget, theme){
   }    
 }
 
+//Get the private main page and layout manager pointers
 function _init(){
   _main_page = Sys.Browser("*").Page("*").Panel("main_page");
   _layoutManager = _main_page.Panel("jimu_layout_manager");
@@ -135,6 +137,7 @@ function _initHome(){
   home = map.Panel("widgets_HomeButton_Widget_*").Panel("esri_dijit_HomeButton_0").Panel(0).Panel(0);
 }
 
+//Get common access points for the IS widget based on the theme
 function _initInfoSummary(theme){
   layersContainer = map.Panel("widgets_InfoSummary_Widget_*_panel").Panel(1).Panel("uniqName_*_*").Panel("widgets_InfoSummary_Widget_*").Panel(0).Panel(0).Panel(0).Panel(1).Panel(0);
   
@@ -145,6 +148,7 @@ function _initInfoSummary(theme){
   }
 }
 
+//Get common access points for the SA widget based on the theme
 function _initSituationAwareness(theme){
   switch (theme){
     case 'FoldableTheme':
@@ -208,6 +212,41 @@ function initPopup(){
 
 //////////////////////////////////////////////////////////////////////////////////
 //SA specific
+function openWidget() {
+  try {
+    //foldable theme
+    Delay(300);
+    var widgetPanel = _layoutManager.Panel("themes_FoldableTheme_widgets_HeaderController_Widget_*").Panel(1).Panel(0)
+
+    if (widgetPanel.VisibleOnScreen || widgetPanel.Visible) {
+      widgetPanel.Click();
+      return checkOpenPanel();
+    } else {
+      compareResults.printResultResult("Fail", "Open widget")
+    }
+  } catch (e) {
+    compareResults.printResult("Open widget " + e);													
+  }
+}
+
+function closeWidget() {
+  try {
+
+  } catch (e) {
+    compareResults.printResult("Close widget " + e);
+  }
+}
+
+function checkOpenPanel() {
+  try {
+    var v = testWidget.VisibleOnScreen;
+    compareResults.printResultResult(!v ? "Fail" : "Pass", "Open Widget");
+    return v;
+  } catch (e) {
+    compareResults.printResult("Open widget panel " + e);
+  }
+}
+
 function getTabsContainer(){
   tabsContainer = widgetUtils._layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1);
 }
@@ -215,11 +254,10 @@ function getTabsContainer(){
 function bufferUnit(myUnit) {
   try {
     getUnit = unit.contentText;
-    buMsg = aqString.Concat("Buffer units - ", myUnit);
+    buMsg = "Buffer units - " + myUnit;
     compareResults.resultTxt(getUnit, myUnit, buMsg); //TODO comparisons should not happen in widgetUtils
   } catch (e) {
-    y = aqString.Concat("Buffer unit ", e);
-    compareResults.printResult(y); //TODO comparisons should not happen in widgetUtils
+    compareResults.printResult("Buffer unit " + e);
   }
 }
 
@@ -232,8 +270,7 @@ function doBuffer(bufferCount) {
     //Click somewhere to apply the buffer
     testWidget.Panel(0).Panel(0).Click(119, 5);
   } catch (e) {
-    y = aqString.Concat("Buffer ", e);
-    compareResults.printResult(y); //TODO comparisons should not happen in widgetUtils
+    compareResults.printResult("Buffer " + e);
   }
 }
 
@@ -276,7 +313,7 @@ function draw(type, coords){
     var func = type == "point" ? drawPoint : type == "line" ? drawLine : drawPoly;
     func(coords);
   } catch (e) {
-    compareResults.printResult(aqString.Concat("Draw " + type + " ", e)); //TODO comparisons should not happen in widgetUtils
+    compareResults.printResult("Draw " + type + " " + e);
   }
 }
 
@@ -296,8 +333,7 @@ function clickFAMenu() {
     var y = ellipsis.offsetHeight / 2;
     panel.Click(x, y);
   } catch (e) {
-    y = aqString.Concat("Click ellipsis ", e);
-    compareResults.printResult(y);//TODO comparisons should not happen in widgetUtils
+    compareResults.printResult("Click ellipsis " + e);
   }
 }
 
@@ -322,8 +358,7 @@ function loopPopupMenu(clickItem) {
             } 																
     } */
   } catch (e) {
-    y = aqString.Concat("Add location ", e);
-    compareResults.printResult(y);//TODO comparisons should not happen in widgetUtils
+    compareResults.printResult("Add location " + e);
   }
 }
 
@@ -333,8 +368,7 @@ function addLocation() {
     Sys.Browser("*").Page("*").Panel(0).Panel(0).Panel(1).Panel("uniqName_0_83").Panel(1).Click();
     compareResults.printResultResult("Pass", "Add location");
   } catch (e) {
-    y = aqString.Concat("Add location ", e);
-    compareResults.printResult(y);//TODO comparisons should not happen in widgetUtils
+    compareResults.printResult("Add location " + e);
   }
 }
 
@@ -344,8 +378,7 @@ function setLocation() {
     Sys.Browser("*").Page("*").Panel(0).Panel(0).Panel(1).Panel("uniqName_0_84").Panel(1).Click();
     compareResults.printResultResult("Pass", "Add location");
   } catch (e) {
-    y = aqString.Concat("Set location ", e);
-    compareResults.printResult(y);//TODO comparisons should not happen in widgetUtils
+    compareResults.printResult("Set location " + e);
   }
 }
 

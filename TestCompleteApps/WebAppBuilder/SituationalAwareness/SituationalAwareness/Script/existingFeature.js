@@ -71,23 +71,19 @@ function location(b, env) {
     Delay(800);
 
   } catch (e) {
-    y = aqString.Concat("Locate incident ", e)
-    compareResults.printResult(y)
+    compareResults.printResult("Locate incident " + e);
   }
-
 }
 
 function addExistingFeature(srchTxt) {
   try {
     // Drop a an incident by clicking on map
-    clickSearch(srchTxt)
+    clickSearch(srchTxt);
     widgetUtils.clickFAMenu();
-    widgetUtils.loopPopupMenu("Add/Remove Location")
-
-    widgetUtils.loopPopupMenu("Set Location")
+    widgetUtils.loopPopupMenu("Add/Remove Location");
+    widgetUtils.loopPopupMenu("Set Location");
   } catch (e) {
-    y = aqString.Concat("Add existing feature ", e)
-    compareResults.printResult(y)
+    compareResults.printResult("Add existing feature " + e);
   }
 }
 
@@ -97,7 +93,6 @@ function clickSearch(txt) {
     widgetUtils.search.SetText(txt);
     Utils.clickEnter();
   } catch (e) {
-    y = aqString.Concat("Search ", e)
-    comapreResults.printResult(y)
+    comapreResults.printResult("Search " + e);
   }
 }

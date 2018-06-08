@@ -1,6 +1,7 @@
 ﻿//USEUNIT compareResults
 //USEUNIT openReadFile
 //USEUNIT downloadAll
+//USEUNIT config
 
 function incidentDownload(b, getPanelArray, demoConcat, hospConcat, schConcat, shelConcat, emeConcat, bridgeCount, rdBlockCount, rdClosure) {
   try {
@@ -13,7 +14,7 @@ function incidentDownload(b, getPanelArray, demoConcat, hospConcat, schConcat, s
     openReadFile.findFiles(getPanelArray);
     openReadFile.getSummaryFile(getPanelArray, demoConcat, hospConcat, schConcat, shelConcat, emeConcat, bridgeCount, rdBlockCount, rdClosure);
   } catch (e) {
-    compareResults.printResult(aqString.Concat("Download ", e))
+    compareResults.printResult("Download " + e);
   }
 }
 
@@ -37,7 +38,7 @@ function resultsDownload(panels, panelsCT, b, num, dName) {
       }
     }
   } catch (e) {
-    compareResults.printResult(aqString.Concat("Download ", e));
+    compareResults.printResult("Download " + e);
   }
 }
 
@@ -60,7 +61,7 @@ function rsltDownload() {
     }
     closeDialog.Click();
   } catch (e) {
-    compareResults.printResult(aqString.Concat("rsltDownload ", e));
+    compareResults.printResult("rsltDownload " + e);
   }
 }
 
@@ -93,11 +94,11 @@ function downloadAllIncidents() {
       closeDialog.Close.Click();
     }
   } catch (e) {
-    compareResults.printResult(aqString.Concat("downloadAllIncidents ", e));
+    compareResults.printResult("downloadAllIncidents " + e);
   }
 }
 
 function delAllFiles() {
   // delete all the files
-  aqFileSystem.DeleteFile("C:\\Users\\suba6982\\Downloads\\*.csv")
+  aqFileSystem.DeleteFile(config.fileFolder + "\\*.csv")
 }
