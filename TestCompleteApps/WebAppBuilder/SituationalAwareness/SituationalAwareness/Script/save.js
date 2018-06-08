@@ -15,15 +15,15 @@ function saveBtn(env, type) {
   }
 }
 
-function deleteFeatures(baseURL, id, check, query){
+function deleteFeatures(baseURL, id, check, query) {
   var _baseURL = baseURL + "/" + id;
   var queryURL = _baseURL + "/query?where=1=1&objectIds=&f=html&token";
   var delUrl = _baseURL + "/deleteFeatures";
   openNewTab(queryURL);
-  if(check){
+  if (check) {
     checkResult();
   }
-  if(query){
+  if (query) {
     query(queryURL);
   }
   delFeatures(delUrl);
@@ -35,15 +35,15 @@ function checkFeaturesSimple(env, type) {
     var baseUrl;
     if (env == "dev") {
       baseUrl = "https://servicesdev.arcgis.com/ZjAWRvdlnNLJ42Xt/arcgis/rest/services/SituationalAwareness_WFL1/FeatureServer";
-      if(type in ["pt", "ln", "pg"]){
+      if (type in ["pt", "ln", "pg"]) {
         var id = type == "pt" ? 8 : type == "ln" ? 9 : 10;
         deleteFeatures(baseUrl, id, type == "pt", type != "pt");
       }
     } else {
       if (env == "qa") {
-      //TODO these are all pointing at the same devext resources...
+        //TODO these are all pointing at the same devext resources...
         baseUrl = "https://servicesdev.arcgis.com/ZjAWRvdlnNLJ42Xt/arcgis/rest/services/SituationalAwareness_WFL1/FeatureServer";
-        if(type in ["pt", "ln", "pg"]){
+        if (type in ["pt", "ln", "pg"]) {
           var id = type == "pt" ? 8 : type == "ln" ? 9 : 10;
           deleteFeatures(baseUrl, id, false, true);
         }

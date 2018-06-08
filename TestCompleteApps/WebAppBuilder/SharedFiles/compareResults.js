@@ -4,11 +4,11 @@
 function printResult(msg) {
   Log.Message(msg);
   resultFile.writeLine("<tr><td> " + msg + " </td><td><font color='#006633'></font></td></tr>");
-} 
+}
 
 //should be moved to resultFile...does no compare
 function printResultCenter(msg) {
-  Log.Message(msg);								
+  Log.Message(msg);
   resultFile.writeLine("<tr><td align = 'center'> " + msg + " </td><td><font color='#006633'></font></td></tr>");
 }
 
@@ -29,7 +29,7 @@ function resultTxt(txt, txt1, msg) {
   resultFile.writePassFailLine(txt == txt1, msg);
 }
 
-function resultImg(pic, img, msg) {  
+function resultImg(pic, img, msg) {
   storedImg = Regions.GetPicture(img);
   resultFile.writePassFailLine((storedImg.Compare(pic), 5), msg); //TODO don't follow how this is a valid compare  
 }

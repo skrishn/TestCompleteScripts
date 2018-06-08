@@ -1,12 +1,11 @@
 ﻿//USEUNIT compareResults
 //USEUNIT openReadFile
-//USEUNIT downloadAll
 //USEUNIT config
 
 function incidentDownload(b, getPanelArray, demoConcat, hospConcat, schConcat, shelConcat, emeConcat, bridgeCount, rdBlockCount, rdClosure) {
   try {
     delAllFiles();
-    widgetUtils.downloadAll.Click();  
+    widgetUtils.downloadAll.Click();
     if (b == "iexplore") {
       downloadAllIncidents();
     }
@@ -23,7 +22,7 @@ function resultsDownload(panels, panelsCT, b, num, dName) {
     Delay(1000);
     delAllFiles();
     //When a results tab is open - this panel is seen
-    var resultTab  = widgetUtils.getResultTab();
+    var resultTab = widgetUtils.getResultTab();
     for (i = resultTab.ChildCount - 1; i >= 0; i--) {
       //Find the panel that has children
       var activePanel = resultTab.Child(i);
@@ -46,15 +45,15 @@ function rsltDownload() {
   try {
     var notificationBar = widgetUtils.getIENotificationBar();
     notificationBar.bar.Refresh();
-    
+
     var saveDialog = notificationBar.Notification_Save;
     if (!saveDialog.Exists) {
       throw "saveDialog does not exist";
     }
     saveDialog.Click();
-    
+
     notificationBar.Refresh();
-    
+
     var closeDialog = notificationBar.Notification_Close;
     if (!closeDialog.Exists && !closeDialog.VisibleOnScreen) {
       throw "closeDialog does not exist or is not visible";
@@ -74,7 +73,7 @@ function downloadAllIncidents() {
     //Is this empty loop just so the break statement could be used??
     for (; ;) {
       notificationBar.Refresh();
-      notificationBar.RefreshMappingInfo();     
+      notificationBar.RefreshMappingInfo();
       var saveDialog = notificationBar.Notification_Save;
       saveDialog.RefreshMappingInfo();
       if (!saveDialog.Exists) {

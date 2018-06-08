@@ -1,7 +1,6 @@
 ﻿//USEUNIT compareResults
 //USEUNIT compareAnalysisLayer
 //USEUNIT widgetUtils
-//USEUNIT startOver
 //USEUNIT utils
 
 function common(b, env) {

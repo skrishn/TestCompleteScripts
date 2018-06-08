@@ -82,23 +82,23 @@ function testTab(panel, name, b, num_features) {
     } else if (name.indexOf("Road Closures") > -1) {
       roadClosures();
     }
-    
+
     downloadUtils.resultsDownload(panel, name, b, num_features, "btnExport download");
   } catch (e) {
     compareResults.printResult("Eval results " + e);
   }
 }
 
-function demographics(){
+function demographics() {
   var concatTexts = ["Age<14 - ", "Age>65 - ", "Total population - "];
   return testText(3, 1, concatTexts);
 }
 
-function hospitals(){
+function hospitals() {
   var panel = widgetUtils.tabsContainer.Panel(4).Panel(0);
 
   testCount();
-  
+
   var addr = panel.Panel(1).Panel(1).contentText;
   compareResults.resultTxtNotEmpty(addr, "Address displays");
 
@@ -113,37 +113,37 @@ function hospitals(){
   return addr.replace(/\n|\r/g, ',');
 }
 
-function schools(){
+function schools() {
   var concatTexts = ["No of students - "];
   return testText(5, 2, concatTexts);
 }
 
-function shelters(){
+function shelters() {
   var concatTexts = ["Total capacity - ", "No of beds available - ", "Current capacity - "];
   return testText(6, 2, concatTexts);
 }
 
-function emergencyAssistance(){ 
+function emergencyAssistance() {
   var concatTexts = ["Medication required - ", "Service animal present - ",
     "Transportation required - ", "Evacuation plan present - "];
   return testText(7, 2, concatTexts);
 }
 
-function bridges(){
+function bridges() {
   testCount(8);
 }
 
-function roadBlocks(){
+function roadBlocks() {
   testCount(9);
 }
 
-function testCount(i){
+function testCount(i) {
   var count = widgetUtils.tabsContainer.Panel(i).Panel(0).Panel(1).Panel(1).contentText;
   compareResults.resultTxt(count, num_features, "Count in header and panel matches");
   return count;
 }
 
-function testText(index, baseIndex, concatTexts){
+function testText(index, baseIndex, concatTexts) {
   var tab = widgetUtils.tabsContainer.Panel(index);
   var appends = [testCount(index)];
   for (var i = baseIndex; i <= concatTexts.length + baseIndex; i++) {

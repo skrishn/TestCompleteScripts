@@ -1,16 +1,12 @@
 ﻿//USEUNIT compareResults
 //USEUNIT compareAnalysisLayer
 //USEUNIT widgetUtils
-//USEUNIT startOver
 //USEUNIT save
-//USEUNIT widget
 //USEUNIT utils
 
 //TODO update signature to support new approach as these arguments
 // will not be provided
 function test(b, env) {
-  //////////////////////////////////
-  //Moved from old functionalTest
   Delay(4000)
   utils.clickEnter();
   var rst = widgetUtils.openWidget();

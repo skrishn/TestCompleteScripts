@@ -102,7 +102,7 @@ function readSummaryFile(file, getPanelArray, demoConcat, hospConcat, schConcat,
   }
 }
 
-function compare(f, i, cnt, a){
+function compare(f, i, cnt, a) {
   f.SetPosition(i + 1, 0);
   var clmnName = f.ReadLine();
 

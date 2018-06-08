@@ -22,11 +22,11 @@ var qaURL = config.qaURLs;
 var qaLog = config.qaLog;
 
 //list of browsers to test
-var browsers = config.browsers; 
+var browsers = config.browsers;
 
 //This function wil create the host object for these tests
 // supports a value of 'dev' or 'qa'
-function getHost(type){
+function getHost(type) {
   //set host env properties based on type
   var host = {
     apps: [],
@@ -39,12 +39,12 @@ function getHost(type){
     browsers: config.browsers,
     widgetName: widgetName
   };
-  
+
   //set the test URLs and names for host apps
   var testURLs = type == "dev" ? config.devURLs : config.qaURLs;
   var testNames = type == "dev" ? config.devTestNames : config.qaTestNames;
-  if(testURLs.length == testNames.length ){
-    for(var i = 0; i < testURLs.length; i++){     
+  if (testURLs.length == testNames.length) {
+    for (var i = 0; i < testURLs.length; i++) {
       host.apps.push({
         name: testNames[i],
         url: testURLs[i],
@@ -53,11 +53,11 @@ function getHost(type){
     }
   } else {
     Log.Error("Must have a unique test name for each test URL." +
-    " Check the config file to verify the number of test names equal the number of test URLs.");
+      " Check the config file to verify the number of test names equal the number of test URLs.");
   }
   return host;
-  
-  
+
+
   //return {
   //  apps: {
   //    app1: {
@@ -82,7 +82,7 @@ function run(browserName, url) {
 
   if (Sys.Browser(browserName).IsOpen) {
     Delay(4000);
-    maximizeWindow(browserName);                   
+    maximizeWindow(browserName);
     clearBrowserCache(browserName);
 
     navigate(url);
@@ -98,7 +98,7 @@ function run(browserName, url) {
 }
 
 //This function will login through the shield page that we are presented when accessing DEV or QA sites
-function login(){
+function login() {
   let regions = Regions.GetPicture("shieldpage_png")
   Log.Message("Shield Page found");
   Delay(500);
@@ -109,7 +109,7 @@ function login(){
   _user.Click();
   _user.SetText(shieldUser);
   _user.Keys("[Tab]");
-  
+
   var _password = widgetUtils.password;
   _password.Click();
   _password.SetText(shieldPassword);
@@ -118,48 +118,48 @@ function login(){
 }
 
 //This function will maximize the browser window
-function maximizeWindow(browser){
+function maximizeWindow(browser) {
   Sys.Browser(browser).BrowserWindow(0).Maximize();
   Delay(1000);
 }
 
 //This function will close the browser window
-function closeBrowser(){
+function closeBrowser() {
   Sys.Browser("*").Close();
 }
 
 //This function will clear the browser cahce for chrome
 // It expects that IE and FireFox have the settings defined to clear the cache 
 //  when the browsr is closed or to not retain history
-function clearBrowserCache(browser){
+function clearBrowserCache(browser) {
   if (browser == "chrome") {
     Browsers.Item(browser).Navigate("chrome://settings/clearBrowserData");
     Aliases.browser.BrowserWindow.Chrome_RenderWidgetHostHWND.Click(1188, 727);
     Log.Message(browser + " cache cleared");
-  } else { 
+  } else {
     Log.Message(browser + " should be set to avoid retaining history or to clear the cache on browser close");
   }
   Delay(300);
 }
 
 //This function will navigate to the test url
-function navigate(url, delay){
+function navigate(url, delay) {
   Browsers.CurrentBrowser.Navigate(url);
   Delay(delay);
 }
 
 //Get the name of the theme used by a given app
-function _getThemeName(url){
-  
+function _getThemeName(url) {
+  return "FoldableTheme";
 }
 
 //This function will get the current time
-function getCurrentTime(){
+function getCurrentTime() {
   return Utilities.FormatDateTime("t", Now());
 }
 
 //This function will determine the full duration of the test runs
-function getTotalTime(){
+function getTotalTime() {
   var v = aqPerformance.Value();
   var h = parseInt((v / (1000 * 60 * 60)) % 24);
   var m = parseInt((v / (1000 * 60)) % 60);
@@ -168,10 +168,10 @@ function getTotalTime(){
 }
 
 //This function will capture the start time and create the output results file
-function initLog(env){
+function initLog(env) {
   //get the time when the process starts
   _getStartTime();
-  
+
   //create a log file to store results
   _createResultFile(env);
 }
@@ -190,9 +190,9 @@ function _createResultFile(env) {
   resultFile.writeLine("<tr><td> Start time </td><td><font color='#303CF4'>" + startTime + "</font></td></tr>");
 }
 
-function writeLine(hexColor, value){
+function writeLine(hexColor, value) {
   Log.Message("Processing: " + value);
-  resultFile.writeLine("<tr><td align = 'center'><font color='" + hexColor +"'>" + value + "</font></td></tr>");
+  resultFile.writeLine("<tr><td align = 'center'><font color='" + hexColor + "'>" + value + "</font></td></tr>");
 }
 
 function stopLogging() {
@@ -208,9 +208,9 @@ function stopLogging() {
 
 ///////////////////////////////////
 //From SA
-function clickEnter(){
+function clickEnter() {
   Sys.Keys("[Enter]");
-  
+
   //Sys.Desktop.Keys("[Enter]")
 }
 

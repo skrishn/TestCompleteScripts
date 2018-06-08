@@ -151,21 +151,7 @@ function _initInfoSummary(theme) {
 function _initSituationAwareness(theme) {
   switch (theme) {
     case 'FoldableTheme':
-      panel = _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(0).Panel(1).Panel(0)
-      testWidget = _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(1);
-      _widgetPanel = testWidget.Panel(0).Panel(0).Panel(2).Panel(1).Panel(0).Panel(1);
-      unit = _widgetPanel.Panel(0);
-      numberSpinner = _widgetPanel.Panel("widget_dijit_form_NumberSpinner_*");
       search = map.Panel("widgets_Search_Widget_*").Panel(0).Panel("esri_dijit_Search_*").Panel(0).Panel(0).Panel(0).Panel(0).Form(0).Textbox("esri_dijit_Search_*_input");
-      save = testWidget.Panel(0).Panel(1).Panel(0).Image("save_png");
-      pageTable = Sys.Browser("*").Page("*").Panel(1).Form(0).Table(0);
-      where = pageTable.Cell(0, 1).Textbox("where");
-      deleteButton = pageTable.Cell(8, 0).SubmitButton("Delete Features");
-      _btnContainer = testWidget.Panel(0).Panel(0).Panel(2).Panel(0).Panel(0);
-      btn0 = _btnContainer.Image("btn0_png");
-      btn1 = _btnContainer.Image("btn1_png");
-      btn2 = _btnContainer.Image("btn2_png");
-      downloadAll = testWidget.Panel(0).Panel(1).Panel(1).Image("download_all_png");
       //Does this work...could be a nice way to keep widget specific functions
       // that need to determine something based on current state with other options that are avalible
       // when the widget opens...
@@ -211,6 +197,26 @@ function initPopup() {
 
 //////////////////////////////////////////////////////////////////////////////////
 //SA specific
+function _initAfterOpenSituationAwareness() {
+  //These do not exist on app startup...only after the eidget has been opened
+  panel = _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(0).Panel(1).Panel(0);
+  testWidget = _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(1);
+  _widgetPanel = testWidget.Panel(0).Panel(0).Panel(2).Panel(1).Panel(0).Panel(1);
+  unit = _widgetPanel.Panel(0);
+  numberSpinner = _widgetPanel.Panel("widget_dijit_form_NumberSpinner_*");
+
+  save = testWidget.Panel(0).Panel(1).Panel(0).Image("save_png");
+  pageTable = Sys.Browser("*").Page("*").Panel(1).Form(0).Table(0);
+  where = pageTable.Cell(0, 1).Textbox("where");
+  deleteButton = pageTable.Cell(8, 0).SubmitButton("Delete Features");
+  _btnContainer = testWidget.Panel(0).Panel(0).Panel(2).Panel(0).Panel(0);
+  btn0 = _btnContainer.Image("btn0_png");
+  btn1 = _btnContainer.Image("btn1_png");
+  btn2 = _btnContainer.Image("btn2_png");
+  downloadAll = testWidget.Panel(0).Panel(1).Panel(1).Image("download_all_png");
+}
+
+//Can this be used by all widgets if they are placed at the same location??
 function openWidget() {
   try {
     //foldable theme
@@ -219,6 +225,7 @@ function openWidget() {
 
     if (widgetPanel.VisibleOnScreen || widgetPanel.Visible) {
       widgetPanel.Click();
+      _initAfterOpenSituationAwareness();
       return checkOpenPanel();
     } else {
       compareResults.printResultResult("Fail", "Open widget")
