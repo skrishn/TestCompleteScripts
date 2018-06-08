@@ -4,6 +4,7 @@
 //USEUNIT startOver
 //USEUNIT save
 //USEUNIT widget
+//USEUNIT utils
 
 //TODO update signature to support new approach as these arguments
 // will not be provided
@@ -11,15 +12,15 @@ function test(b, env) {
   //////////////////////////////////
   //Moved from old functionalTest
   Delay(4000)
-  Sys.Desktop.Keys("[Enter]")
-  rst = widgetUtils.openWidget()
+  utils.clickEnter();
+  var rst = widgetUtils.openWidget();
   Log.Message("rst in functionality " + rst)
   if (rst) {
     location(b, env);
     locationWithBuffer(b, env);
-    startOver.clickStartOver();
+    clickStartOver();
   } else {
-    compareResults.printResultResult("Fail", "Open widget")
+    compareResults.printResultResult("Fail", "Open widget");
   }
 }
 
@@ -54,5 +55,30 @@ function locationWithBuffer(b, env) {
     widgetUtils.home.Click();
   } catch (e) {
     compareResults.printResult("Locate incident - Buffer" + e);
+  }
+}
+
+function clickStartOver() {
+  try {
+    //TODO figure out what this is and move to widgetUtils
+    var startOver = widgetUtils.testWidget.Panel(0).Panel(0).Panel(1);
+    startOver.Click();
+    Sys.Refresh();
+
+    var v = startOver.Visible;
+    compareResults.printResultResult(v ? "Fail" : "Pass", "Start over " + (v ? "still" : "not") + " visible");
+    if (!v) {
+      bufferText = widgetUtils.numberSpinner.Panel(2).Textbox(0).Text;
+      compareResults.resultTxt(bufferText, "0", "Buffer text cleared");
+
+      var classNames = "btn32img darkThemeBackground";
+      b0 = widgetUtils.btn0.className == classNames;
+      b1 = widgetUtils.btn1.className == classNames;
+      b2 = widgetUtils.btn2.className == classNames;
+
+      compareResults.printResultResult(b0 && b1 && b2 ? "Pass" : "Fail", "Buttons are inactive");
+    }
+  } catch (e) {
+    compareResults.printResult("Startover" + e);
   }
 }

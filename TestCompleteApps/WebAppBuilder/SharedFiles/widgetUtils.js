@@ -68,16 +68,16 @@ var tabsContainer;
 var downloadAll;
 
 //This function handles login for the main shield page when logging into DEV or QA
-function initLogin(){
+function initLogin() {
   var loginContainer = Sys.Browser("*").Page("*").Panel("container");
-  if(loginContainer && loginContainer.Panel){
+  if (loginContainer && loginContainer.Panel) {
     loginForm = loginContainer.Panel("bg").Panel(0).Form("loginForm");
     user = loginForm.Table(0).Cell(0, 1).Textbox("j_username");
     password = loginForm.Table(0).Cell(1, 1).PasswordBox("j_password");
   }
 }
 
-function initSignIn(){
+function initSignIn() {
   Delay(1000)
   var ago_form = Sys.Browser("*").Page("*").Panel("page_border").Panel(1).Panel("signInForm").Panel("login_form").Form("sign_in_form").Panel("rightAgo").Frame("oAuthFrame").Panel(0).Panel(0).Panel(0).Panel("main").Panel(0).Form("oauth").Fieldset("fieldSet").Panel("ago_form");
   var un = ago_form.Textbox("user_username");
@@ -91,13 +91,12 @@ function initSignIn(){
 }
 
 //TODO expand this to init based on theme and widget being tested
-function init(widget, theme){
+function init(widget, theme) {
   _init();
   _initMap();
   _initZoom();
   _initHome();
-  switch (widget)
-  {
+  switch (widget) {
     case 'InfoSummary':
       _initInfoSummary(theme);
       break;
@@ -110,38 +109,38 @@ function init(widget, theme){
     case 'DataAggregation':
       _initDataAggregation(theme);
       break
-  }    
+  }
 }
 
 //Get the private main page and layout manager pointers
-function _init(){
+function _init() {
   _main_page = Sys.Browser("*").Page("*").Panel("main_page");
   _layoutManager = _main_page.Panel("jimu_layout_manager");
 }
 
 //TODO this will only stay as a seperate function if it needs to be theme dependant
-function _initMap(){
+function _initMap() {
   map = _layoutManager.Panel("map");
   mapDIV = map.Panel("map_root").Panel("map_container").Panel("map_layers").Panel("map_gc");
 }
 
 //TODO this will only stay as a seperate function if it needs to be theme dependant
-function _initZoom(){
+function _initZoom() {
   _zoom = map.Panel("widgets_ZoomSlider_Widget_*");
   zoomIn = _zoom.Panel(1);
   zoomOut = _zoom.Panel(0);
 }
 
 //TODO this will only stay as a seperate function if it needs to be theme dependant
-function _initHome(){
+function _initHome() {
   home = map.Panel("widgets_HomeButton_Widget_*").Panel("esri_dijit_HomeButton_0").Panel(0).Panel(0);
 }
 
 //Get common access points for the IS widget based on the theme
-function _initInfoSummary(theme){
+function _initInfoSummary(theme) {
   layersContainer = map.Panel("widgets_InfoSummary_Widget_*_panel").Panel(1).Panel("uniqName_*_*").Panel("widgets_InfoSummary_Widget_*").Panel(0).Panel(0).Panel(0).Panel(1).Panel(0);
-  
-  switch (theme){
+
+  switch (theme) {
     case 'FoldableTheme':
       testWidget = _layoutManager.Panel("themes_FoldableTheme_widgets_HeaderController_Widget_*").Panel(1).Panel(0);
       break;
@@ -149,8 +148,8 @@ function _initInfoSummary(theme){
 }
 
 //Get common access points for the SA widget based on the theme
-function _initSituationAwareness(theme){
-  switch (theme){
+function _initSituationAwareness(theme) {
+  switch (theme) {
     case 'FoldableTheme':
       panel = _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(0).Panel(1).Panel(0)
       testWidget = _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(1);
@@ -170,39 +169,39 @@ function _initSituationAwareness(theme){
       //Does this work...could be a nice way to keep widget specific functions
       // that need to determine something based on current state with other options that are avalible
       // when the widget opens...
-      getResultTab = function(){
+      getResultTab = function () {
         return _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1);
       }
-      getIENotificationBar = function(){
+      getIENotificationBar = function () {
         var notificationBar = Sys.Browser("iexplore").BrowserWindow(0).Window("Frame Notification Bar", "", 1).UIAObject("Notification");
-        return { 
+        return {
           bar: notificationBar,
           Notification_Save: notificationBar.UIAObject("Save"),
           Notification_Close: notificationBar.UIAObject("Close")
         };
       }
-      getNotificationBar = function(){
+      getNotificationBar = function () {
         return Aliases.browser.BrowserWindow.FrameNotificationBar;
       }
-      break;     
+      break;
   }
 }
 
-function _initScreening(theme){
-  switch (theme){
+function _initScreening(theme) {
+  switch (theme) {
     case 'FoldableTheme':
       break;
   }
 }
 
-function _initDataAggregation(theme){
-  switch (theme){
+function _initDataAggregation(theme) {
+  switch (theme) {
     case 'FoldableTheme':
       break;
   }
 }
 
-function initPopup(){
+function initPopup() {
   var _basePopupPath = map.Panel("map_root").Panel(1).Panel(0);
   popup = _basePopupPath.Panel(1).Panel(0).Panel("esri_dijit_PopupRenderer_*");
   popupClose = _basePopupPath.Panel(0).Panel(0).Panel(5);
@@ -225,7 +224,7 @@ function openWidget() {
       compareResults.printResultResult("Fail", "Open widget")
     }
   } catch (e) {
-    compareResults.printResult("Open widget " + e);													
+    compareResults.printResult("Open widget " + e);
   }
 }
 
@@ -247,7 +246,7 @@ function checkOpenPanel() {
   }
 }
 
-function getTabsContainer(){
+function getTabsContainer() {
   tabsContainer = widgetUtils._layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1);
 }
 
@@ -293,13 +292,13 @@ function drawPoly(coords) {
   var startY = coords[0][1];
   var endX = coords[coords.length - 1][0];
   var endY = coords[coords.length - 1][1];
-  if(startX != endX || startY != endY){
+  if (startX != endX || startY != endY) {
     coords.push([startX, startY]);
   }
   _drawCoords(coords);
 }
 
-function _drawCoords(coords){
+function _drawCoords(coords) {
   Delay(75);
   for (var i = 0; i < coords.length; i++) {
     var func = i + 1 == coords.length ? mapDIV.DblClick : mapDIV.Click;
@@ -308,7 +307,7 @@ function _drawCoords(coords){
   }
 }
 
-function draw(type, coords){
+function draw(type, coords) {
   try {
     var func = type == "point" ? drawPoint : type == "line" ? drawLine : drawPoly;
     func(coords);

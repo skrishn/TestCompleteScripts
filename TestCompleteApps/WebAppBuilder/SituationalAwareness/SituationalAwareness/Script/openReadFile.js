@@ -62,7 +62,7 @@ function readSummaryFile(file, getPanelArray, demoConcat, hospConcat, schConcat,
         a = "Special Medications Required,Service Animal Present,Transportation Required,Evacuation Plan Present,COUNT";
         cnt = emeConcat;
       } else if (rl == "Shelters (Summary)") {
-        a = "Total Capacity,# of Beds Available,Current Occupancy,COUNT");
+        a = "Total Capacity,# of Beds Available,Current Occupancy,COUNT";
         cnt = shelConcat;
       } else if (rl == "Schools (Summary)") {
         a = "# of Students,COUNT"

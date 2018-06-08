@@ -210,6 +210,8 @@ function stopLogging() {
 //From SA
 function clickEnter(){
   Sys.Keys("[Enter]");
+  
+  //Sys.Desktop.Keys("[Enter]")
 }
 
 function openIt() {
