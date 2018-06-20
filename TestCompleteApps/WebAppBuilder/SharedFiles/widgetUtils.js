@@ -208,6 +208,7 @@ function _initSituationAwareness(theme) {
 function _initScreening(theme) {
   switch (theme) {
     case 'FoldableTheme':
+      testWidget = _layoutManager.Panel("themes_FoldableTheme_widgets_HeaderController_Widget_*").Panel(1).Panel(0);
       break;
   }
 }
