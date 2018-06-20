@@ -17,7 +17,7 @@ function incidentDownload(b, getPanelArray, demoConcat, hospConcat, schConcat, s
   }
 }
 
-function resultsDownload(panels, panelsCT, b, num, dName) {
+function resultsDownload(panels, panelsCT, num, dName) {
   try {
     Delay(1000);
     delAllFiles();
@@ -29,10 +29,10 @@ function resultsDownload(panels, panelsCT, b, num, dName) {
       if (activePanel.Visible == true) {
         downloadButton = activePanel.Panel(0).Panel(0).Panel(0);
         downloadButton.Click();
-        if (b == "iexplore") {
+        if (Sys.Browser("*") == "iexplore") {
           rsltDownload();
         }
-        openReadFile.openFiles(panelsCT, b, num);
+        openReadFile.openFiles(panelsCT, num);
         break;
       }
     }

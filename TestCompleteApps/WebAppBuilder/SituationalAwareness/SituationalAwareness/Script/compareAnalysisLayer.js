@@ -4,7 +4,7 @@
 let demoConcat = "", hospConcat = "", schConcat = "", shelConcat = "", emeConcat = "";
 let bridgeCount = "", rdBlockCount = "", rdClosure = "";
 
-function getAnalysisLayer(b, download) {
+function getAnalysisLayer(download) {
   try {
     Delay(500)
     widgetUtils.getTabsContainer();
@@ -14,7 +14,7 @@ function getAnalysisLayer(b, download) {
       for (i = cnt - 1; i >= 0; i--) {
         var panel = widgetUtils.panel.Child(i);
         var panelText = panel.contentText;
-        if (panel.className == "SATTab") {
+        if (panel.className.indexOf("SATTab") > -1) {
           if (panelText != "Incident") {
             panel.Click();
             //TODO why is Demographics handled differently??
@@ -26,8 +26,8 @@ function getAnalysisLayer(b, download) {
             // testTab(panel, name, b, num_features);
 
             if (panelText == "Demographics") {
-              panels.push(panelText);
-              testTab(panel, panelText, b, "demo");
+              //panels.push(panelText);
+              //testTab(panel, panelText, "demo");
             } else {
               //TODO what is all this
               //Look and see why the space is being added..??
@@ -42,7 +42,7 @@ function getAnalysisLayer(b, download) {
                 name = name.replace("RoadClosures", "Road Closures");
               }
               panels.push(name);
-              testTab(panel, name, b, num_features);
+              testTab(panel, name, num_features);
             }
           }
         }
@@ -61,7 +61,7 @@ function getAnalysisLayer(b, download) {
   }
 }
 
-function testTab(panel, name, b, num_features) {
+function testTab(panel, name, num_features) {
   try {
     compareResults.printResultCenter(name);
 
@@ -83,7 +83,7 @@ function testTab(panel, name, b, num_features) {
       roadClosures();
     }
 
-    downloadUtils.resultsDownload(panel, name, b, num_features, "btnExport download");
+    downloadUtils.resultsDownload(panel, name, num_features, "btnExport download");
   } catch (e) {
     compareResults.printResult("Eval results " + e);
   }
@@ -139,7 +139,7 @@ function roadBlocks() {
 
 function testCount(i) {
   var count = widgetUtils.tabsContainer.Panel(i).Panel(0).Panel(1).Panel(1).contentText;
-  compareResults.resultTxt(count, num_features, "Count in header and panel matches");
+  compareResults.resultTxt(count, i, "Count in header and panel matches");
   return count;
 }
 

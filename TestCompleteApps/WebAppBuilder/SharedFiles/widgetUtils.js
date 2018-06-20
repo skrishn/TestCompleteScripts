@@ -121,7 +121,17 @@ function _init() {
 //TODO this will only stay as a seperate function if it needs to be theme dependant
 function _initMap() {
   map = _layoutManager.Panel("map");
-  mapDIV = map.Panel("map_root").Panel("map_container").Panel("map_layers").Panel("map_gc");
+  try {
+    mapDIV = map.Panel("map_root").Panel("map_container").Panel("map_layers").SVG("map_gc");
+  }
+  catch (e) {
+    try {
+      mapDIV = map.Panel("map_root").Panel("map_container").Panel("map_layers").Panel("map_gc");
+    }
+    catch (e) {
+      throw "Can't find map div";
+    }
+  }
 }
 
 //TODO this will only stay as a seperate function if it needs to be theme dependant
@@ -152,12 +162,33 @@ function _initSituationAwareness(theme) {
   switch (theme) {
     case 'FoldableTheme':
       search = map.Panel("widgets_Search_Widget_*").Panel(0).Panel("esri_dijit_Search_*").Panel(0).Panel(0).Panel(0).Panel(0).Form(0).Textbox("esri_dijit_Search_*_input");
-      //Does this work...could be a nice way to keep widget specific functions
-      // that need to determine something based on current state with other options that are avalible
-      // when the widget opens...
+    
+      initAfterOpenSituationAwareness = function() {
+        //These do not exist on app startup...only after the eidget has been opened
+        panel = _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(0).Panel(1).Panel(0);
+        testWidget = _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(1);
+        _widgetPanel = testWidget.Panel(0).Panel(0).Panel(2).Panel(1).Panel(0).Panel(1);
+        unit = _widgetPanel.Panel(0);
+        numberSpinner = _widgetPanel.Panel("widget_dijit_form_NumberSpinner_*");
+        _btnContainer = testWidget.Panel(0).Panel(0).Panel(2).Panel(0).Panel(0);
+        btn0 = _btnContainer.Image("btn0_png");
+        btn1 = _btnContainer.Image("btn1_png");
+        btn2 = _btnContainer.Image("btn2_png");
+      }
+      
+      initAfterIncident = function(){
+        //These do not exist until incident has been defined
+        save = testWidget.Panel(0).Panel(1).Panel(0).Image("save_png");
+        pageTable = Sys.Browser("*").Page("*").Panel(1).Form(0).Table(0);
+        where = pageTable.Cell(0, 1).Textbox("where");
+        deleteButton = pageTable.Cell(8, 0).SubmitButton("Delete Features");
+        downloadAll = testWidget.Panel(0).Panel(1).Panel(1).Image("download_all_png");
+      }
+      
       getResultTab = function () {
         return _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1);
       }
+      
       getIENotificationBar = function () {
         var notificationBar = Sys.Browser("iexplore").BrowserWindow(0).Window("Frame Notification Bar", "", 1).UIAObject("Notification");
         return {
@@ -166,6 +197,7 @@ function _initSituationAwareness(theme) {
           Notification_Close: notificationBar.UIAObject("Close")
         };
       }
+      
       getNotificationBar = function () {
         return Aliases.browser.BrowserWindow.FrameNotificationBar;
       }
@@ -197,35 +229,17 @@ function initPopup() {
 
 //////////////////////////////////////////////////////////////////////////////////
 //SA specific
-function _initAfterOpenSituationAwareness() {
-  //These do not exist on app startup...only after the eidget has been opened
-  panel = _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(0).Panel(1).Panel(0);
-  testWidget = _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1).Panel(1);
-  _widgetPanel = testWidget.Panel(0).Panel(0).Panel(2).Panel(1).Panel(0).Panel(1);
-  unit = _widgetPanel.Panel(0);
-  numberSpinner = _widgetPanel.Panel("widget_dijit_form_NumberSpinner_*");
-
-  save = testWidget.Panel(0).Panel(1).Panel(0).Image("save_png");
-  pageTable = Sys.Browser("*").Page("*").Panel(1).Form(0).Table(0);
-  where = pageTable.Cell(0, 1).Textbox("where");
-  deleteButton = pageTable.Cell(8, 0).SubmitButton("Delete Features");
-  _btnContainer = testWidget.Panel(0).Panel(0).Panel(2).Panel(0).Panel(0);
-  btn0 = _btnContainer.Image("btn0_png");
-  btn1 = _btnContainer.Image("btn1_png");
-  btn2 = _btnContainer.Image("btn2_png");
-  downloadAll = testWidget.Panel(0).Panel(1).Panel(1).Image("download_all_png");
-}
 
 //Can this be used by all widgets if they are placed at the same location??
 function openWidget() {
   try {
     //foldable theme
     Delay(300);
-    var widgetPanel = _layoutManager.Panel("themes_FoldableTheme_widgets_HeaderController_Widget_*").Panel(1).Panel(0)
+    var widgetPanel = _layoutManager.Panel("themes_FoldableTheme_widgets_HeaderController_Widget_*").Panel(1).Panel(0);
 
     if (widgetPanel.VisibleOnScreen || widgetPanel.Visible) {
       widgetPanel.Click();
-      _initAfterOpenSituationAwareness();
+      initAfterOpenSituationAwareness();
       return checkOpenPanel();
     } else {
       compareResults.printResultResult("Fail", "Open widget")

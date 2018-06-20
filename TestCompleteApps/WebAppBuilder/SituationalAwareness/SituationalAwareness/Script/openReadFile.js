@@ -2,7 +2,7 @@
 //USEUNIT config
 var w = 0, d = 0, ww, dd;
 
-function openFiles(name, b, num) {
+function openFiles(name, num) {
   try {
     var file = config.fileFolder + "\\" + name + ".csv";
     Log.Message("concated file " + file);

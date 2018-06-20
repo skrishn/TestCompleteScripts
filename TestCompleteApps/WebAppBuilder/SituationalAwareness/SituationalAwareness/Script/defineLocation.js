@@ -6,27 +6,27 @@
 
 //TODO update signature to support new approach as these arguments
 // will not be provided
-function test(b, env) {
+function test(themeName) {
   Delay(4000)
   utils.clickEnter();
   var rst = widgetUtils.openWidget();
   Log.Message("rst in functionality " + rst)
   if (rst) {
-    location(b, env);
-    locationWithBuffer(b, env);
+    location();
+    locationWithBuffer();
     clickStartOver();
   } else {
     compareResults.printResultResult("Fail", "Open widget");
   }
 }
 
-function location(b, env) {
+function location() {
   try {
     //No buffer - point, line, polygon
     //Batavia park
     compareResults.printResultCenter("Incident - Point");
     widgetUtils.draw("point", [1191, 285]);
-    getPanelArray = compareAnalysisLayer.getAnalysisLayer(b, "noDownload");
+    getPanelArray = compareAnalysisLayer.getAnalysisLayer("noDownload");
     save.saveBtn(env, "pt");
     //TODO find out what this is and move access to widgetUtils
     widgetUtils.map.Panel("map_root").Panel(1).Panel(0).Panel(0).Panel(0).Panel(5).Click();
@@ -36,7 +36,7 @@ function location(b, env) {
   }
 }
 
-function locationWithBuffer(b, env) {
+function locationWithBuffer() {
   try {
     //Batavia park
     compareResults.printResultCenter("Incident - Point with Buffer");
