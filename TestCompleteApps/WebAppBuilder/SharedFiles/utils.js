@@ -134,7 +134,7 @@ function closeBrowser() {
 function clearBrowserCache(browser) {
   if (browser == "chrome") {
     Browsers.Item(browser).Navigate("chrome://settings/clearBrowserData");
-    Aliases.browser.BrowserWindow.Chrome_RenderWidgetHostHWND.Click(1191, 734)
+    Aliases.browser.BrowserWindow.Chrome_RenderWidgetHostHWND.Click(1191, 734);
     Log.Message(browser + " cache cleared");
   } else {
     Log.Message(browser + " should be set to avoid retaining history or to clear the cache on browser close");
