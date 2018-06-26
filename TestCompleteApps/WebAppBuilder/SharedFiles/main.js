@@ -23,6 +23,9 @@ function runTests(type) {
       //Run widget tests
       host.tests.forEach(function (t) {
         try {
+          if(host.requiresAGOLLogin){
+            utils.loginAGOL(host.user, host.password);
+          }
           widgetUtils.init(host.widgetName, app.themeName);
           t.test(app.themeName);
         }

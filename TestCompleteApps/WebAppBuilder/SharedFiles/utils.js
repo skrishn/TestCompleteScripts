@@ -12,14 +12,14 @@ var shieldUser = config.shieldUser;
 var shieldPassword = config.shieldPassword;
 
 //DEV env test properties
-var devTestName = config.devTestName;
-var devURLs = config.devURLs;
-var devLog = config.devLog;
+//var devTestName = config.devTestName;
+//var devURLs = config.devURLs;
+//var devLog = config.devLog;
 
 //QA evv test properties
-var qaTestName = config.qaTestName;
-var qaURL = config.qaURLs;
-var qaLog = config.qaLog;
+//var qaTestName = config.qaTestName;
+//var qaURL = config.qaURLs;
+//var qaLog = config.qaLog;
 
 //list of browsers to test
 var browsers = config.browsers;
@@ -37,7 +37,10 @@ function getHost(type) {
     },
     tests: config.tests,
     browsers: config.browsers,
-    widgetName: widgetName
+    widgetName: widgetName,
+    requiresAGOLLogin: config.requiresAGOLLogin,
+    user: type == "dev" ? config.devUser : config.qaUser,
+    password: type == "dev" ? config.devPassword : config.qaPassword
   };
 
   //set the test URLs and names for host apps
@@ -56,21 +59,6 @@ function getHost(type) {
       " Check the config file to verify the number of test names equal the number of test URLs.");
   }
   return host;
-
-
-  //return {
-  //  apps: {
-  //    app1: {
-  //      name: "app1",
-  //      url: type == "dev" ? devURL : qaURL        
-  //    }
-  //  },
-  //  env: {
-  //    type: type,
-  //    path: type == "dev" ? devLog : qaLog,
-  //    name: type == "dev" ? devTestName : qaTestName
-  //  }
-  //};
 }
 
 //This function will clear the browser cahce then login and navigate to the test app url 
@@ -107,14 +95,26 @@ function login() {
 
   var _user = widgetUtils.user;
   _user.Click();
-  _user.SetText(shieldUser);
+  _user.SetText(config.shieldUser);
   _user.Keys("[Tab]");
 
   var _password = widgetUtils.password;
   _password.Click();
-  _password.SetText(shieldPassword);
+  _password.SetText(config.shieldPassword);
   _password.Keys("[Enter]");
   Delay(900);
+}
+
+function loginAGOL(user, password){
+  var fieldset = Aliases.browser.pageStatemAutotestMapsqaArcgisCo2.formSignInForm.frameOauthframe.formOauth.fieldset;
+  var textbox = fieldset.textboxUsername;
+  textbox.Click(53, 11);
+  textbox.SetText(user);
+  textbox.Keys("[Tab]");
+  var passwordBox = fieldset.passwordboxPassword;
+  passwordBox.SetText(password);
+  passwordBox.Keys("[Enter]");
+  Delay(4000);
 }
 
 //This function will maximize the browser window

@@ -78,14 +78,14 @@ function initLogin() {
 }
 
 function initSignIn() {
-  Delay(1000)
+  Delay(1000);
   var ago_form = Sys.Browser("*").Page("*").Panel("page_border").Panel(1).Panel("signInForm").Panel("login_form").Form("sign_in_form").Panel("rightAgo").Frame("oAuthFrame").Panel(0).Panel(0).Panel(0).Panel("main").Panel(0).Form("oauth").Fieldset("fieldSet").Panel("ago_form");
   var un = ago_form.Textbox("user_username");
   un.SetText("suba_qa_sem")
   pwd = ago_form.PasswordBox("user_password");
   pwd.SetText("esrigis123")
   ago_form.Panel(0).Panel(0).Button("signIn").Click();
-  Delay(2000)
+  Delay(2000);
   _init();
   _layoutManager.Panel("jimu_dijit_Message_0").Panel(1).Panel(0).Click();
 }
@@ -213,10 +213,72 @@ function _initScreening(theme) {
   }
 }
 
+var daPanel;
+var nextButton;
+var backButton;
+var homeButton;
+var downloadButton;
+
+var saveButton;
+var locateButton;
+var syncButton;
+var featureInformation;
+var locationInformation;
 function _initDataAggregation(theme) {
   switch (theme) {
     case 'FoldableTheme':
       testWidget = _layoutManager.Panel("themes_FoldableTheme_widgets_HeaderController_Widget_*").Panel(1).Panel(0);
+
+      browseFile = function(path) {
+        var browser = Aliases.browser;
+        var page = browser.pageStatemAutotestMapsqaArcgisCo;
+        page.form.label.Click(104, 16);
+        var dlgOpen = browser.dlgOpen;
+        dlgOpen.OpenFile(path); 
+        homeButton = page.panelJimuLayoutManager.panel;
+      }
+
+      clickNext = function () {
+        nextButton.Click(3, 10);
+      }
+
+      clickBack = function () {
+        //backButton.Click(?, ?);
+      }
+
+      clickHome = function () {
+        homeButton.Click(30, 16);
+      }
+
+      clickDownload = function () {
+        daPanel.table.cell6.panel.panel.Click(10, 8);
+      }
+
+      initPanel = function () {
+        daPanel = page.panelWidgetsDataaggregationWidge;
+        nextButton = daPanel.table.cell.panel;
+      }
+
+      initStartPage = function () {
+        startPage = daPanel.panelCriticalfacilitiesStartpage;
+      }
+
+      initAddressPage = function () {
+
+      }
+
+      initReviewPage = function () {
+
+      }
+
+      initFeatureListPage = function () {
+
+      }
+
+      initFeaturePage = function () {
+
+      }
+
       break;
   }
 }
@@ -227,6 +289,11 @@ function initPopup() {
   popupClose = _basePopupPath.Panel(0).Panel(0).Panel(5);
   popupHeader = _basePopupPath.Panel(0).Panel(0).Panel(1);
   popupNext = _basePopupPath.Panel(0).Panel(0).Panel(3);
+}
+
+function clickWidget() {
+  testWidget.Click();
+  Delay(1000);
 }
 
 //////////////////////////////////////////////////////////////////////////////////
