@@ -42,7 +42,6 @@ function basicTest2(csvInfo){
   var panel = widgetUtils.daPanel;
   table = panel.table;
   panel2 = table.cell.panel;
-  widgetUtils.initPanel();
   widgetUtils.clickNext();
   widgetUtils.clickNext();
   

@@ -69,7 +69,7 @@ function writePassFailLine(pass, msg) {
     Log.Message("Pass: " + msg);
     writeLine("<tr><td> " + msg + " </td><td><font color='#006633'>Pass</font></td></tr>");
   } else {
-    Log.Message("Fail: " + msg);
+    Log.Error("Fail: " + msg);
     writeLine("<tr><td> " + msg + " </td><td><font color='#FF0000'>Fail</font></td></tr>");
   }
 }

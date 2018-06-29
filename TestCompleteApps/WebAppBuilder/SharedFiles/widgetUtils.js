@@ -4,6 +4,7 @@
 // IF these need to be delayed will need to move set to a function like "init"
 
 //Private members
+var _page;
 var _main_page;
 var _layoutManager;
 var _zoom;
@@ -114,6 +115,7 @@ function init(widget, theme) {
 
 //Get the private main page and layout manager pointers
 function _init() {
+  _page = Sys.Browser("*").Page("*");
   _main_page = Sys.Browser("*").Page("*").Panel("main_page");
   _layoutManager = _main_page.Panel("jimu_layout_manager");
 }
@@ -205,10 +207,70 @@ function _initSituationAwareness(theme) {
   }
 }
 
+//screening report page list
+var list;
+var drawButton;
+var placeNameButton;
+var backButton;
+var refreshButton;
+var downloadButton;
+var reportButton;
+var configButton;
+var zoomButton;
+var areaValue;
+var drawPointButton;
+var drawLineButton;
+var drawPolyButton;
+var drawFreehandPolyButton;
+var selectButton;
+var bufferDistance;
+var bufferUnit;
+var startOverButton;
+var expandSelectLayer;
+
 function _initScreening(theme) {
   switch (theme) {
     case 'FoldableTheme':
       testWidget = _layoutManager.Panel("themes_FoldableTheme_widgets_HeaderController_Widget_*").Panel(1).Panel(0);
+
+      initReportPage = function(){
+        list = map.Panel("widgets_Screening_Widget_20_panel").Panel(1).Panel("uniqName_13_0").Panel("widgets_Screening_Widget_20").Panel(0).Panel(0).Panel(2).Panel(1).Panel(2);
+        
+        //backButton
+        //refreshButton
+        //downloadButton
+        //reportButton
+        //configButton
+        //zoomButton
+        //areaValue
+      }
+      
+      initStartPage = function(){
+        var _widgetPanel = map.Panel("widgets_Screening_Widget_20_panel").Panel(1).Panel("uniqName_13_0").Panel("widgets_Screening_Widget_20").Panel(0).Panel(0);
+      
+        var _startContainer = _widgetPanel.Panel(1).Panel(0);
+        drawButton = _startContainer.Panel(1);
+        placeNameButton = _startContainer.Panel(0);
+        
+        var _drawBox = _widgetPanel.Panel(1).Panel(1).Panel(1).Panel("uniqName_0_2").Panel("jimu_dijit_DrawBox_0").Panel(0);
+        drawPointButton = _drawBox.Panel(0);    
+        drawLineButton = _drawBox.Panel(2); 
+        drawPolyButton = _drawBox.Panel(5);
+        drawFreehandPolyButton = _drawBox.Panel(8);     
+        selectButton = _drawBox.Panel(12).Panel("jimu_dijit_FeatureSetChooserForMultipleLayers_0").Panel(0).Panel(0).Panel(0).Panel(0).Panel(0);
+        
+        var _bufferContainer = _widgetPanel.Panel(1).Panel(4);
+        bufferDistance = _bufferContainer.Panel(0).Panel("widget_dijit_form_NumberTextBox_0").Panel(1).Textbox(0);  
+        bufferUnit = _bufferContainer.Panel(1).Table(0).Cell(0, 1).Textbox(0);
+        
+        var _keyContainer = _widgetPanel.Panel(1).Panel(6);
+        reportButton = _keyContainer.Panel(1).Panel(0);      
+        startOverButton = _keyContainer.Panel(0).Panel(0);
+        
+        expandSelectLayer = _widgetPanel.Panel(1).Panel(1).Panel(1).Panel("uniqName_0_2").Panel(2).Panel(0).Panel(0);
+        
+        zoomButton = _widgetPanel.Panel(0).Panel(2);
+      }
       break;
   }
 }
