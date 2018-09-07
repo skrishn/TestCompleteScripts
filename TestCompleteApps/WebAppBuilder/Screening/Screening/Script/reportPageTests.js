@@ -11,7 +11,7 @@ function test(themeName) {
   var panel2;
   var textbox;
   var panel3;
-  //var page = Aliases.browser.pageStatemAutotestMapsqaArcgisCo;
+
   var page = widgetUtils._page;
 
   Delay(2000);
@@ -19,7 +19,6 @@ function test(themeName) {
   
   //click draw
   widgetUtils.drawButton.Click(91, 16);
-  //page.panel2.Click(91, 16);
   
   //click drawPoint
   widgetUtils.drawPointButton.Click(19, 24);

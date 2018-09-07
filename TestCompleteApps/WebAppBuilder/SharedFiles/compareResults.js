@@ -51,3 +51,21 @@ function resultTxtNotEmpty1(txt, msg) {
 function resultTxtFind(txt, txt1, msg) {
   resultFile.writePassFailLine(aqString.Find(txt, txt1) != -1, msg);
 }
+
+function isTextEqual(control, value){
+  _isEqual(control, "Text", value);
+}
+
+function isContentTextEqual(control, value){
+  _isEqual(control, "contentText", value);
+}
+
+function isClassNameEqual(control, value){
+  _isEqual(control, "className", value);
+}
+
+function _isEqual(control, property, value){
+  var result = aqObject.CheckProperty(control, property, cmpEqual, value);
+  var msg = "Control: " + control + ", Property: " + property + ", IsEqual: " + value;
+  resultFile.writePassFailLine(result, msg);
+}

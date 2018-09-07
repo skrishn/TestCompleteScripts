@@ -68,6 +68,74 @@ var panel;
 var tabsContainer;
 var downloadAll;
 
+//InfoSummary controls
+
+//Data Aggregation controls
+var page;
+var daPanel;
+var _pageContainer;
+var nextButton;
+var backButton;
+var homeButton;
+var downloadButton;
+var featurePageLabel;
+var expandFeatureInfoButton;
+var expandFeatureInfoRow;
+var expandLocationInfoButton;
+var expandLocationInfoRow;
+var saveButton;
+var cancelButton;
+var editButton;
+var locateButton;
+var syncButton;
+var featureInformation;
+var locationInformation;
+var viewStack;
+var _cancelDialog;
+var cancelDialogYes;
+var cancelDialogNo;
+var cancelDialogTitle;
+var cancelDialogMessage;
+var cancelDialogExit;
+var clickCancel;
+var reviewPage;
+var locationsFoundLabel;
+var locationsFoundCount;
+var locationsNotFoundLabel;
+var locationsNotFoundCount;
+var locationsDuplicateLabel;
+var locationsDuplicateCount;
+var _clearSettingsDialog;
+var clearSettingsDialogYes;
+var clearSettingsDialogNo;
+var _addressPage;
+var singleFieldRadio;
+var singleFieldSelect;
+var multiFieldRadio;
+//TODO update all button instances to private naming converntions
+// and add a var for all public functions
+
+//Screening controls
+var list;
+var drawButton;
+var placeNameButton;
+var backButton;
+var refreshButton;
+var downloadButton;
+var reportButton;
+var configButton;
+var zoomButton;
+var areaValue;
+var drawPointButton;
+var drawLineButton;
+var drawPolyButton;
+var drawFreehandPolyButton;
+var selectButton;
+var bufferDistance;
+var bufferUnit;
+var startOverButton;
+var expandSelectLayer;
+
 //This function handles login for the main shield page when logging into DEV or QA
 function initLogin() {
   var loginContainer = Sys.Browser("*").Page("*").Panel("container");
@@ -91,7 +159,6 @@ function initSignIn() {
   _layoutManager.Panel("jimu_dijit_Message_0").Panel(1).Panel(0).Click();
 }
 
-//TODO expand this to init based on theme and widget being tested
 function init(widget, theme) {
   _init();
   _initMap();
@@ -116,7 +183,7 @@ function init(widget, theme) {
 //Get the private main page and layout manager pointers
 function _init() {
   _page = Sys.Browser("*").Page("*");
-  _main_page = Sys.Browser("*").Page("*").Panel("main_page");
+  _main_page = _page.Panel("main_page");
   _layoutManager = _main_page.Panel("jimu_layout_manager");
 }
 
@@ -203,30 +270,142 @@ function _initSituationAwareness(theme) {
       getNotificationBar = function () {
         return Aliases.browser.BrowserWindow.FrameNotificationBar;
       }
+
+      getTabsContainer = function () {
+        tabsContainer = widgetUtils._layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1);
+      }
+      
+      bufferUnit = function (myUnit) {
+        try {
+          getUnit = unit.contentText;
+          buMsg = "Buffer units - " + myUnit;
+          compareResults.resultTxt(getUnit, myUnit, buMsg); //TODO comparisons should not happen in widgetUtils
+        } catch (e) {
+          compareResults.printResult("Buffer unit " + e);
+        }
+      }
+      
+      doBuffer = function (bufferCount) {
+        try {
+          upArrow = numberSpinner.Panel(0).Panel(0).Panel(0);
+          for (i = 0; i < bufferCount; i++) {
+            upArrow.Click();
+          }
+          //Click somewhere to apply the buffer
+          testWidget.Panel(0).Panel(0).Click(119, 5);
+        } catch (e) {
+          compareResults.printResult("Buffer " + e);
+        }
+      }
+      
+      //TODO draw functions should be genericised to apply to screening and SA and any other widget that draws..
+      drawPoint = function (coords) {
+        //Will only draw the first coords
+        btn0.Click();
+        mapDIV.Click(coords[0], coords[1]);
+      }
+      
+      drawLine = function (coords) {
+        btn1.Click();
+        _drawCoords(coords);
+      }
+      
+      drawPoly = function (coords) {
+        btn2.Click();
+      
+        //ensure the poly is closed
+        var startX = coords[0][0];
+        var startY = coords[0][1];
+        var endX = coords[coords.length - 1][0];
+        var endY = coords[coords.length - 1][1];
+        if (startX != endX || startY != endY) {
+          coords.push([startX, startY]);
+        }
+        _drawCoords(coords);
+      }
+      
+      _drawCoords = function (coords) {
+        Delay(75);
+        for (var i = 0; i < coords.length; i++) {
+          var func = i + 1 == coords.length ? mapDIV.DblClick : mapDIV.Click;
+          func(coords[i][0], coords[i][1]);
+          Delay(50);
+        }
+      }
+      
+      draw = function (type, coords) {
+        try {
+          var func = type == "point" ? drawPoint : type == "line" ? drawLine : drawPoly;
+          func(coords);
+        } catch (e) {
+          compareResults.printResult("Draw " + type + " " + e);
+        }
+      }
+      
+      clickIncidentTab = function () {
+        var inciTab = _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(0).Panel(1).Panel(0).Panel(0);
+        inciTab.Click();
+      }
+
+      clickFAMenu = function () {
+        try {
+          var panel = map.Panel("map_root").Panel(1).Panel(0).Panel(2).Panel(0).Panel(0);
+          var ellipsis = panel.FindChildByXPath("//span [@class='popup-menu-button']");
+          var x = panel.Width - ellipsis.offsetWidth / 2;
+          var y = ellipsis.offsetHeight / 2;
+          panel.Click(x, y);
+        } catch (e) {
+          compareResults.printResult("Click ellipsis " + e);
+        }
+      }
+      
+      loopPopupMenu = function (clickItem) {
+        try {
+          Delay(300);
+          popupMenu = Sys.Browser("*").Page("*").Panel(0).Panel(0).Panel(1);
+          myItem = popupMenu.FindChild("contentText", clickItem, 7);
+          myItem.Click();
+          /*popupMenuCC = popupMenu.ChildCount;
+          for(i = 0; i<popupMenuCC ; i++){
+                  popupMenu.fin;
+                  myItem = popupMenu.Child(i);
+                  Delay(300);
+                  myItemCT = myItem.
+                  Delay(250);
+                  if(myItemCT == clickItem) {
+                          myItem0 = myItem.Panel(1);
+                          myItem0.Click();
+                          compareResults.printResultResult("Pass", clickItem);
+                          break;
+                  } 																
+          } */
+        } catch (e) {
+          compareResults.printResult("Add location " + e);
+        }
+      }
+      
+      addLocation = function () {
+        try {
+          //TODO see what we can do about that hardcoded name
+          Sys.Browser("*").Page("*").Panel(0).Panel(0).Panel(1).Panel("uniqName_0_83").Panel(1).Click();
+          compareResults.printResultResult("Pass", "Add location");
+        } catch (e) {
+          compareResults.printResult("Add location " + e);
+        }
+      }
+      
+      setLocation = function () {
+        try {
+          //TODO see what we can do about that hardcoded name
+          Sys.Browser("*").Page("*").Panel(0).Panel(0).Panel(1).Panel("uniqName_0_84").Panel(1).Click();
+          compareResults.printResultResult("Pass", "Add location");
+        } catch (e) {
+          compareResults.printResult("Set location " + e);
+        }
+      }
       break;
   }
 }
-
-//screening report page list
-var list;
-var drawButton;
-var placeNameButton;
-var backButton;
-var refreshButton;
-var downloadButton;
-var reportButton;
-var configButton;
-var zoomButton;
-var areaValue;
-var drawPointButton;
-var drawLineButton;
-var drawPolyButton;
-var drawFreehandPolyButton;
-var selectButton;
-var bufferDistance;
-var bufferUnit;
-var startOverButton;
-var expandSelectLayer;
 
 function _initScreening(theme) {
   switch (theme) {
@@ -275,41 +454,17 @@ function _initScreening(theme) {
   }
 }
 
-var daPanel;
-var nextButton;
-var backButton;
-var homeButton;
-var downloadButton;
-
-var saveButton;
-var locateButton;
-var syncButton;
-var featureInformation;
-var locationInformation;
 function _initDataAggregation(theme) {
   switch (theme) {
     case 'FoldableTheme':
       testWidget = _layoutManager.Panel("themes_FoldableTheme_widgets_HeaderController_Widget_*").Panel(1).Panel(0);
-
+        
       browseFile = function(path) {
         var browser = Aliases.browser;
-        var page = browser.pageStatemAutotestMapsqaArcgisCo;
+        page = browser.pageStatemAutotestMapsqaArcgisCo;
         page.form.label.Click(104, 16);
         var dlgOpen = browser.dlgOpen;
-        dlgOpen.OpenFile(path); 
-        homeButton = page.panelJimuLayoutManager.panel;
-      }
-
-      clickNext = function () {
-        nextButton.Click(3, 10);
-      }
-
-      clickBack = function () {
-        //backButton.Click(?, ?);
-      }
-
-      clickHome = function () {
-        homeButton.Click(30, 16);
+        dlgOpen.OpenFile(path);
       }
 
       clickDownload = function () {
@@ -318,19 +473,125 @@ function _initDataAggregation(theme) {
 
       initPanel = function () {
         daPanel = page.panelWidgetsDataaggregationWidge;
-        nextButton = daPanel.table.cell.panel;
+
+        _pageContainer = map.Panel("widgets_DataAggregation_Widget_20_panel").Panel(1).Panel("uniqName_13_0").Panel("widgets_DataAggregation_Widget_20").Panel("PageContainer_0");
+        viewStack = _pageContainer.Panel("jimu_dijit_ViewStack_0");
+        
+        backButton = _pageContainer.Panel(0).Table(0).Cell(0, 0);
+        clickBack = function () {
+          backButton.Click(10, 10);
+        }
+
+        nextButton = _pageContainer.Panel(0).Table(0).Cell(0, 2);
+        clickNext = function () {
+          nextButton.Click(10, 10);
+        }
+        
+        homeButton = _pageContainer.Panel(0).Table(0).Cell(0, 1).Panel(0);
+        clickHome = function () {
+          homeButton.Click(10, 10);
+          //init the response dialog
+          Delay(1000);
+          _initClearSettingsDialog();
+        }
+        
+        _initClearSettingsDialog = function () {
+          _clearSettingsDialog = _layoutManager.Panel("jimu_dijit_Popup_*");
+        
+          clearSettingsDialogYes = _clearSettingsDialog.Panel(2).Panel(2);
+          clickClearSettingsDialogYes = function () {
+            clearSettingsDialogYes.Click(5, 5);
+          }
+      
+          clearSettingsDialogNo = _clearSettingsDialog.Panel(2).Panel(0);
+          clickClearSettingsDialogNo = function () {
+            clearSettingsDialogNo.Click(5, 5);
+          }
+        }
       }
 
       initStartPage = function () {
-        startPage = daPanel.panelCriticalfacilitiesStartpage;
+        startPage = viewStack.Panel("CriticalFacilities_StartPage_*");
+        addToMapButton = startPage.Panel(0).Panel(0);
+        clickAddToMap = function () {
+          addToMapButton.Click(10, 10);
+        }
       }
 
+      initLocationTypePage = function () {
+
+      }
+      
       initAddressPage = function () {
-
+        _addressPage = viewStack.Panel("CriticalFacilities_Addresses_*");
+        
+        singleFieldRadio = _addressPage.Table(0).Cell(2, 0).Table(0).Cell(0, 0).Panel(0).RadioButton("addr");
+        clickSingleFieldRadio = function () {
+          singleFieldRadio.Click(3, 3);
+        }
+        
+        singleFieldSelect = _addressPage.Table(0).Cell(2, 0).Table(0).Cell(2, 0).Table(0).Cell(0, 1).Table(0).Cell(0, 0);
+        clickSingleFieldSelect = function () {
+          singleFieldSelect.Click(3, 3);
+        }
+        
+        multiFieldRadio = _addressPage.Table(0).Cell(3, 0).Table(0).Cell(0, 0).Panel(0).RadioButton("addr");
+        clickMultiFieldRadio = function () {
+          multiFieldRadio.Click(3, 3);
+        }
       }
 
-      initReviewPage = function () {
-
+      initReviewPage = function (type) {
+        reviewPage = viewStack.Panel("CriticalFacilities_Review_*");
+        //TODO if the paths are the same regardless of what it starts with this switch would not be necessary
+        switch (type)
+        {
+          case 'found':
+            locationsFoundLabel = reviewPage.Table(0).Cell(6, 0).Panel(0);
+            locationsFoundCount = reviewPage.Table(0).Cell(6, 1).Panel(0);
+            break;
+        
+          case 'notFound':
+            locationsNotFoundLabel = reviewPage;
+            locationsNotFoundCount = reviewPage;
+            break;
+          
+          case 'duplicate':
+            locationsDuplicateLabel = reviewPage;
+            locationsDuplicateCount = reviewPage;      
+            break;
+        
+          case 'found-notFound':
+            locationsFoundLabel = reviewPage.Table(0).Cell(6, 0).Panel(0);
+            locationsFoundCount = reviewPage.Table(0).Cell(6, 1).Panel(0);
+            locationsNotFoundLabel = reviewPage.Table(0).Cell(2, 0).Panel(0);
+            locationsNotFoundCount = reviewPage.Table(0).Cell(2, 1).Panel(0);
+            break;
+            
+          case 'found-duplicate':
+            locationsFoundLabel = reviewPage;
+            locationsFoundCount = reviewPage;
+            locationsDuplicateLabel = reviewPage;
+            locationsDuplicateCount = reviewPage;
+            break;
+        
+          case 'notFound-duplicate':
+            locationsNotFoundLabel = reviewPage;
+            locationsNotFoundCount = reviewPage;
+            locationsDuplicateLabel = reviewPage;
+            locationsDuplicateCount = reviewPage;
+            break;
+          
+          case 'found-notFound-duplicate':
+            locationsFoundLabel = reviewPage;
+            locationsFoundCount = reviewPage;
+            locationsNotFoundLabel = reviewPage;
+            locationsNotFoundCount = reviewPage;
+            locationsDuplicateLabel = reviewPage;
+            locationsDuplicateCount = reviewPage;      
+            break;
+        
+        }
       }
 
       initFeatureListPage = function () {
@@ -338,9 +599,78 @@ function _initDataAggregation(theme) {
       }
 
       initFeaturePage = function () {
+        featureTable = daPanel.table;
+      
+        featurePageLabel = viewStack.Panel("CriticalFacilities_Feature_0").Table(0).Cell(0, 0).Panel(0);
+        
+        locateButton = viewStack.Panel("CriticalFacilities_Feature_*").Panel(1).Table(0).Cell(0, 2).Panel(0);
+        clickLocate = function () {         
+          locateButton.Click(8, 10);
+        }
+        
+        cancelButton = viewStack.Panel("CriticalFacilities_Feature_*").Table(1).Cell(0, 1).Panel(0).Panel("FeatureToolbar_0").Table(0).Cell(0, 1).Panel(0);
+        clickCancel = function () {
+          cancelButton.Click(8, 10);
+          Delay(100);
+          _initCancelEditDialog();
+        }
+        
+        saveButton = viewStack.Panel("CriticalFacilities_Feature_*").Table(1).Cell(0, 1).Panel(0).Panel("FeatureToolbar_0").Table(0).Cell(0, 2).Panel(0);
+        clickSave = function () {
+           saveButton.Click(8, 10);
+        }
+        
+        editButton = viewStack.Panel("CriticalFacilities_Feature_*").Table(1).Cell(0, 1).Panel(0).Panel("FeatureToolbar_0").Table(0).Cell(0, 0).Panel(0);
+        clickEdit = function () {
+          editButton.Click(8, 10);
+        }
+        
+        syncButton = viewStack.Panel("CriticalFacilities_Feature_*").Panel(1).Table(0).Cell(0, 1).Panel(0);
+        clickSync = function () {
+          syncButton.Click(8, 10);
+        }
 
+        expandLocationInfoButton = viewStack.Panel("CriticalFacilities_Feature_*").Table(3).Cell(0, 1)
+        clickExpandLocationButton = function(expanded) {
+          expandLocationInfoButton.Click(7, 5);
+        }
+        
+        expandLocationInfoRow = viewStack.Panel("CriticalFacilities_Feature_*").Table(3).Cell(0, 0);
+        clickExpandLocationRow = function(expanded) {
+          expandLocationInfoRow.Click(10, 10);
+        }
+        
+        expandFeatureInfoButton = viewStack.Panel("CriticalFacilities_Feature_*").Table(2).Cell(0, 1).Panel(0);
+        clickExpandFeatureButton = function(expanded) {
+          expandFeatureInfoButton.Click(10, 10);
+        }
+        
+        expandFeatureInfoRow = viewStack.Panel("CriticalFacilities_Feature_*").Table(2).Cell(0, 0);
+        clickExpandFeatureRow = function(expanded) {
+          expandFeatureInfoRow.Click(10, 10);
+        }
+             
+        _initCancelEditDialog = function () {
+          _cancelDialog = _layoutManager.Panel("jimu_dijit_Popup_0");
+          cancelDialogYes = _cancelDialog.Panel(2).Panel(2);
+          cancelDialogNo = _cancelDialog.Panel(2).Panel(0);
+          cancelDialogTitle = _cancelDialog.Panel(0).TextNode(0);
+          cancelDialogMessage = _cancelDialog.Panel(1).Panel(0);
+          cancelDialogExit = _cancelDialog.Panel(0).Panel(0);
+        }
+        
+        clickCancelDialogYes = function () {
+          cancelDialogYes.Click(5, 5);
+        }
+        
+        clickCancelDialogNo = function () {
+          cancelDialogNo.Click(5, 5);
+        }
+        
+        clickCancelDialogExit = function () {
+          cancelDialogExit.Click(5, 5);
+        }      
       }
-
       break;
   }
 }
@@ -397,140 +727,4 @@ function checkOpenPanel() {
     compareResults.printResult("Open widget panel " + e);
   }
 }
-
-function getTabsContainer() {
-  tabsContainer = widgetUtils._layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(1);
-}
-
-function bufferUnit(myUnit) {
-  try {
-    getUnit = unit.contentText;
-    buMsg = "Buffer units - " + myUnit;
-    compareResults.resultTxt(getUnit, myUnit, buMsg); //TODO comparisons should not happen in widgetUtils
-  } catch (e) {
-    compareResults.printResult("Buffer unit " + e);
-  }
-}
-
-function doBuffer(bufferCount) {
-  try {
-    upArrow = numberSpinner.Panel(0).Panel(0).Panel(0);
-    for (i = 0; i < bufferCount; i++) {
-      upArrow.Click();
-    }
-    //Click somewhere to apply the buffer
-    testWidget.Panel(0).Panel(0).Click(119, 5);
-  } catch (e) {
-    compareResults.printResult("Buffer " + e);
-  }
-}
-
-function drawPoint(coords) {
-  //Will only draw the first coords
-  btn0.Click();
-  mapDIV.Click(coords[0], coords[1]);
-}
-
-function drawLine(coords) {
-  btn1.Click();
-  _drawCoords(coords);
-}
-
-function drawPoly(coords) {
-  btn2.Click();
-
-  //ensure the poly is closed
-  var startX = coords[0][0];
-  var startY = coords[0][1];
-  var endX = coords[coords.length - 1][0];
-  var endY = coords[coords.length - 1][1];
-  if (startX != endX || startY != endY) {
-    coords.push([startX, startY]);
-  }
-  _drawCoords(coords);
-}
-
-function _drawCoords(coords) {
-  Delay(75);
-  for (var i = 0; i < coords.length; i++) {
-    var func = i + 1 == coords.length ? mapDIV.DblClick : mapDIV.Click;
-    func(coords[i][0], coords[i][1]);
-    Delay(50);
-  }
-}
-
-function draw(type, coords) {
-  try {
-    var func = type == "point" ? drawPoint : type == "line" ? drawLine : drawPoly;
-    func(coords);
-  } catch (e) {
-    compareResults.printResult("Draw " + type + " " + e);
-  }
-}
-
-function clickIncidentTab() {
-  var inciTab = _layoutManager.Panel("widgets_SituationAwareness_Widget_*").Panel(0).Panel(0).Panel(1).Panel(0).Panel(0);
-  inciTab.Click();
-}
-
-/////////////////////
-//Feature Action
-////////////////////
-function clickFAMenu() {
-  try {
-    var panel = map.Panel("map_root").Panel(1).Panel(0).Panel(2).Panel(0).Panel(0);
-    var ellipsis = panel.FindChildByXPath("//span [@class='popup-menu-button']");
-    var x = panel.Width - ellipsis.offsetWidth / 2;
-    var y = ellipsis.offsetHeight / 2;
-    panel.Click(x, y);
-  } catch (e) {
-    compareResults.printResult("Click ellipsis " + e);
-  }
-}
-
-function loopPopupMenu(clickItem) {
-  try {
-    Delay(300);
-    popupMenu = Sys.Browser("*").Page("*").Panel(0).Panel(0).Panel(1);
-    myItem = popupMenu.FindChild("contentText", clickItem, 7);
-    myItem.Click();
-    /*popupMenuCC = popupMenu.ChildCount;
-    for(i = 0; i<popupMenuCC ; i++){
-            popupMenu.fin;
-            myItem = popupMenu.Child(i);
-            Delay(300);
-            myItemCT = myItem.
-            Delay(250);
-            if(myItemCT == clickItem) {
-                    myItem0 = myItem.Panel(1);
-                    myItem0.Click();
-                    compareResults.printResultResult("Pass", clickItem);
-                    break;
-            } 																
-    } */
-  } catch (e) {
-    compareResults.printResult("Add location " + e);
-  }
-}
-
-function addLocation() {
-  try {
-    //TODO see what we can do about that hardcoded name
-    Sys.Browser("*").Page("*").Panel(0).Panel(0).Panel(1).Panel("uniqName_0_83").Panel(1).Click();
-    compareResults.printResultResult("Pass", "Add location");
-  } catch (e) {
-    compareResults.printResult("Add location " + e);
-  }
-}
-
-function setLocation() {
-  try {
-    //TODO see what we can do about that hardcoded name
-    Sys.Browser("*").Page("*").Panel(0).Panel(0).Panel(1).Panel("uniqName_0_84").Panel(1).Click();
-    compareResults.printResultResult("Pass", "Add location");
-  } catch (e) {
-    compareResults.printResult("Set location " + e);
-  }
-}
-
 //////////////////////////////////////////////////////////////////////////////////

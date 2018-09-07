@@ -1,5 +1,6 @@
 ﻿//USEUNIT widgetUtils
 //USEUNIT config
+//USEUNIT compareResults
 
 var _themeName;
 
@@ -11,87 +12,153 @@ function test(themeName) {
 
   //config option that is specific to DA tests
   var csvFiles = config.csvFiles;
+  
+  //Test multiField address
+  _testCSV(csvFiles.multiFieldAddress, false);
 
   //Test single field address
-  testCSV(csvFiles.singleFieldAddress, true);
-
-  //Test multiField address
-  testCSV(csvFiles.multiFieldAddress, false);
+  _testCSV(csvFiles.singleFieldAddress, false);
 
   //Test duplicates
-  testCSV(csvFiles.duplicate, true);
+  _testCSV(csvFiles.duplicate, false);
 
   //Test XY
-  testCSV(csvFiles.xy, true);
+  _testCSV(csvFiles.xy, true);
 }
 
-function testCSV(csvInfo, clear) {
+function _testCSV(csvInfo, clear) {
   //try {
     widgetUtils.browseFile(csvInfo.path);
-    basicTest2(csvInfo);
+    Delay(4000);
+    //need a way to pull out the edit layer url
+    //_clearResults();
+    _daWorkflow(csvInfo);
     if (clear) {
       clearResults(url);
     }
   //} catch (error) {
-
+    
   //}
 }
 
-function basicTest2(csvInfo){
+function _daWorkflow(csvInfo) {
+  //init locations and field info
   widgetUtils.initPanel();
-  var panel = widgetUtils.daPanel;
-  table = panel.table;
-  panel2 = table.cell.panel;
+  
+  //click next to location info
   widgetUtils.clickNext();
+  Delay(10);
+  
+  //click to locate with address
+  widgetUtils.clickNext();
+  Delay(10);
+  widgetUtils.initAddressPage();
+  
+  switch (csvInfo.type)
+  {
+    case 'duplicate':
+      widgetUtils.clickMultiFieldRadio();  
+      break;
+    case 'single':
+      widgetUtils.clickSingleFieldRadio();
+      //TODO Need to set Field here
+      break;      
+    case 'multiple':
+      widgetUtils.clickMultiFieldRadio();  
+      break;
+    case 'xy':
+    
+      break;
+  }
+  
+  //click next to go back to locations and field info
   widgetUtils.clickNext();
   
-  Delay(1000);
-  panel.panelCriticalfacilitiesAddresses.table.cell.panel.Click(7, 4);
+  //click next to go to field info
   widgetUtils.clickNext();
+  Delay(10);
+  
+  //click next to accept defaults and go back to field info
   widgetUtils.clickNext();
-  Delay(1000);
-  widgetUtils.clickNext();
-  Delay(1000);
+  Delay(10);
+  
+  //init the start page and click add to map
   widgetUtils.initStartPage();
-  widgetUtils.startPage.panel.panel.Click(75, 13);
-  Delay(1000);
-  table.cell2.panel.Click(2, 10);
-  table2 = table.table;
-  Delay(1000);
-  table2.cell.panel.Click(4, 11);
-  Delay(1000);
-  table2.cell2.panel.Click(8, 7);
-  Delay(1000);
-  table.cell3.Click(216, 20);
+  widgetUtils.clickAddToMap();
   Delay(2000);
-  textbox = table.cell4.textbox;
-  Delay(1000);
-  textbox.Click(56, 13);
-  Delay(1000);
-  textbox.SetText("Denver");
-  Delay(2000);
-  textbox = table.cell7.textbox;
-  Delay(2000);
-  textbox.SetText("CO");
-  Delay(2000);
-  //textbox.SetText("");
-  //page.Keys("[Tab]");
-  panel2 = panel.panelPagecontainer0;
-  panel2.Click(321, 223);
-  table.cell5.panel.Click(8, 7);
-  Delay(1000);
-  panel = panel2.panelCriticalfacilitiesReview0.panel;
-  Delay(1000);
-  panel.Click(48, 18);
-  Delay(1000);
-  panel2.Click(308, 177);
-  Delay(1000);
-  panel.Click(57, 16);
-  Delay(1000);
-  table.cell6.panel.panel.Click(10, 8);
-  Delay(1000);
+  
+  //init the review page and go into locations not found
+  widgetUtils.initReviewPage('found-notFound');
+  widgetUtils.clickNext();
+  Delay(10);
+  
+  //click into un-located Feature
+  widgetUtils.clickNext();
+  Delay(10);
+  
+  //handle the unlocated feature
+  handleUnlocated();
+
+  //click home and yes to clear the settings 
   widgetUtils.clickHome();
+  widgetUtils.clickClearSettingsDialogYes();
+}
+
+function handleUnlocated()
+{
+  //init the feature page and start editing
+  widgetUtils.initFeaturePage();
+  widgetUtils.clickEdit();
+  Delay(10);
+
+  //expand the location information
+  widgetUtils.clickExpandLocationButton();
+
+  //get the feature table
+  var table = widgetUtils.featureTable;
+  
+  //verify expected text for location
+  compareResults.isTextEqual(table.cell6.textbox, "8140 E 5TH AVENUE");
+  compareResults.isTextEqual(table.cell4.textbox, "");
+  compareResults.isTextEqual(table.cell7.textbox, "");
+
+  //set text and verify locate is enabled
+  table.cell4.textbox.SetText("Denver");
+  compareResults.isClassNameEqual(widgetUtils.locateButton, "bg-ft-img feature-toolbar-btn float-right bg-locate");
+  
+  //clear text and verify locate is disabled
+  table.cell4.textbox.SetText("");
+  compareResults.isClassNameEqual(widgetUtils.locateButton, "bg-ft-img feature-toolbar-btn float-right bg-locate-disabled");
+  
+  //set text and locate
+  table.cell4.textbox.SetText("Denver");
+  table.cell7.textbox.SetText("CO"); 
+  widgetUtils.clickLocate();
   Delay(1000);
+
+  //verify cancel and save are enabled
+  compareResults.isClassNameEqual(widgetUtils.cancelButton, "bg-ft-img feature-toolbar-btn bg-cancel");
+  compareResults.isClassNameEqual(widgetUtils.saveButton, "float-right bg-ft-img feature-toolbar-btn bg-save");
+  
+  //cancel the locate
+  widgetUtils.clickCancel();
+  widgetUtils.clickCancelDialogYes();
+  
+  //TODO seems like we should clear out the address info they set here...seems like a bug to me
+  
+  //clear and reset text
+  table.cell4.textbox.SetText("");
+  table.cell4.textbox.SetText("Denver");
+  
+  //locate and save
+  widgetUtils.clickLocate();
+  widgetUtils.clickSave();
+  Delay(100);
+  
+  //init the review page and verify that the saved record was moved to locations found
+  widgetUtils.initReviewPage('found');
+  compareResults.isContentTextEqual(widgetUtils.locationsFoundLabel, 'Locations Found');
+  compareResults.isContentTextEqual(widgetUtils.locationsFoundCount, '25');
 }
 
 function dragDrop() {
@@ -99,7 +166,7 @@ function dragDrop() {
 }
 
 //Clears results of previous submit operations
-function clearResults(url) {
+function _clearResults(url) {
   //TODO write function that will hit the destination layer URL and clear the features
 
 }

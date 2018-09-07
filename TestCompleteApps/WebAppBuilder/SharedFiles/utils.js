@@ -113,6 +113,7 @@ function loginAGOL(user, password){
   textbox.Keys("[Tab]");
   var passwordBox = fieldset.passwordboxPassword;
   passwordBox.SetText(password);
+  Delay(1000);
   passwordBox.Keys("[Enter]");
   Delay(4000);
 }
