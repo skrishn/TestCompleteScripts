@@ -12,12 +12,14 @@ function test(themeName) {
 
   //config option that is specific to DA tests
   var csvFiles = config.csvFiles;
-  
+
   //Test multiField address
-  _testCSV(csvFiles.multiFieldAddress, false);
+  //_testCSV(csvFiles.multiFieldAddress, false);
 
   //Test single field address
-  _testCSV(csvFiles.singleFieldAddress, false);
+  //_testCSV(csvFiles.singleFieldAddress, false);
+  
+  _clearResults(csvFiles.singleFieldAddress.url);
 
   //Test duplicates
   _testCSV(csvFiles.duplicate, false);
@@ -27,85 +29,118 @@ function test(themeName) {
 }
 
 function _testCSV(csvInfo, clear) {
-  //try {
-    widgetUtils.browseFile(csvInfo.path);
-    Delay(4000);
-    //need a way to pull out the edit layer url
-    //_clearResults();
-    _daWorkflow(csvInfo);
-    if (clear) {
-      clearResults(url);
-    }
-  //} catch (error) {
-    
-  //}
+  widgetUtils.browseFile(csvInfo.path);
+  Delay(4000);
+  _daWorkflow(csvInfo);
+  if (clear) {
+    clearResults(csvInfo.url);
+  } else {
+    //click home and yes to clear the settings 
+    widgetUtils.clickHome();
+    widgetUtils.clickClearSettingsDialogYes();
+  }
 }
 
 function _daWorkflow(csvInfo) {
   //init locations and field info
   widgetUtils.initPanel();
-  
+
   //click next to location info
   widgetUtils.clickNext();
   Delay(10);
-  
+
   //click to locate with address
   widgetUtils.clickNext();
   Delay(10);
   widgetUtils.initAddressPage();
-  
-  switch (csvInfo.type)
-  {
+
+  switch (csvInfo.type) {
     case 'duplicate':
-      widgetUtils.clickMultiFieldRadio();  
+      widgetUtils.clickMultiFieldRadio();
       break;
     case 'single':
       widgetUtils.clickSingleFieldRadio();
-      //TODO Need to set Field here
-      break;      
+      widgetUtils.singleAddrSelect.Keys(csvInfo.fields[0] + "[Enter]");
+      break;
     case 'multiple':
-      widgetUtils.clickMultiFieldRadio();  
+      widgetUtils.clickMultiFieldRadio();
       break;
     case 'xy':
-    
+
       break;
   }
-  
+
   //click next to go back to locations and field info
   widgetUtils.clickNext();
-  
+
   //click next to go to field info
   widgetUtils.clickNext();
   Delay(10);
-  
+
   //click next to accept defaults and go back to field info
   widgetUtils.clickNext();
   Delay(10);
-  
+
   //init the start page and click add to map
   widgetUtils.initStartPage();
   widgetUtils.clickAddToMap();
   Delay(2000);
-  
-  //init the review page and go into locations not found
-  widgetUtils.initReviewPage('found-notFound');
+
+  var numLocated = csvInfo.numExpectedMatched;
+  var numUnlocated = csvInfo.numExpectedUnMatched;
+  var numDuplicate = csvInfo.numExpectedDuplicate;
+  //init the review page
+  if (numLocated > 0 && numUnlocated > 0 && numDuplicate > 0) {
+    widgetUtils.initReviewPage('found-notFound-duplicate');
+  } else if (numLocated > 0 && numUnlocated > 0) {
+    widgetUtils.initReviewPage('found-notFound');
+  } else if (numUnlocated > 0 && numDuplicate > 0) {
+    widgetUtils.initReviewPage('notFound-duplicate');
+  } else if (numLocated > 0 && numDuplicate > 0) {
+    widgetUtils.initReviewPage('found-duplicate');
+  } else if (numLocated > 0) {
+    widgetUtils.initReviewPage('found');
+  } else if (numUnlocated > 0) {
+    widgetUtils.initReviewPage('notFound');
+  } else if (numDuplicate > 0) {
+    widgetUtils.initReviewPage('duplicate');
+  }
+
+  //go into locations not found
   widgetUtils.clickNext();
   Delay(10);
-  
+
   //click into un-located Feature
   widgetUtils.clickNext();
   Delay(10);
-  
-  //handle the unlocated feature
-  handleUnlocated();
 
-  //click home and yes to clear the settings 
-  widgetUtils.clickHome();
-  widgetUtils.clickClearSettingsDialogYes();
+  if (csvInfo.numExpectedUnMatched > 0) {
+    //TODO for this to support multiple unlocated the config will need
+    var unlocatedFeatures = csvInfo.unlocatedFeatures;
+    var _numUnlocated = unlocatedFeatures.length;
+    unlocatedFeatures.forEach(f => {
+      //handle the unlocated feature
+      numLocated += 1;
+
+      switch (csvInfo.type) {
+        case 'duplicate':
+          _numUnlocated = handleUnlocatedDuplicate(f, _numUnlocated, numLocated);
+          break;
+        case 'single':
+          _numUnlocated = handleUnlocatedSingleField(f, _numUnlocated, numLocated);
+          break;
+        case 'multiple':
+          _numUnlocated = handleUnlocatedMultiField(f, _numUnlocated, numLocated);
+          break;
+        case 'xy':
+          _numUnlocated = handleUnlocatedXY(f, _numUnlocated, numLocated);
+          break;
+      }
+    });
+  }
 }
 
-function handleUnlocated()
-{
+function handleUnlocatedDuplicate(f, numUnlocated, numLocated) {
   //init the feature page and start editing
   widgetUtils.initFeaturePage();
   widgetUtils.clickEdit();
@@ -116,49 +151,243 @@ function handleUnlocated()
 
   //get the feature table
   var table = widgetUtils.featureTable;
-  
+
   //verify expected text for location
-  compareResults.isTextEqual(table.cell6.textbox, "8140 E 5TH AVENUE");
-  compareResults.isTextEqual(table.cell4.textbox, "");
-  compareResults.isTextEqual(table.cell7.textbox, "");
+  compareResults.isTextEqual(table.cell6.textbox, f.address.actual);
+  compareResults.isTextEqual(table.cell4.textbox, f.city.actual);
+  compareResults.isTextEqual(table.cell7.textbox, f.state.actual);
 
   //set text and verify locate is enabled
-  table.cell4.textbox.SetText("Denver");
+  table.cell4.textbox.SetText(f.city.expected);
   compareResults.isClassNameEqual(widgetUtils.locateButton, "bg-ft-img feature-toolbar-btn float-right bg-locate");
-  
+
   //clear text and verify locate is disabled
   table.cell4.textbox.SetText("");
   compareResults.isClassNameEqual(widgetUtils.locateButton, "bg-ft-img feature-toolbar-btn float-right bg-locate-disabled");
-  
+
   //set text and locate
-  table.cell4.textbox.SetText("Denver");
-  table.cell7.textbox.SetText("CO"); 
+  table.cell4.textbox.SetText(f.city.expected);
+  table.cell7.textbox.SetText(f.state.expected);
   widgetUtils.clickLocate();
   Delay(1000);
 
   //verify cancel and save are enabled
   compareResults.isClassNameEqual(widgetUtils.cancelButton, "bg-ft-img feature-toolbar-btn bg-cancel");
   compareResults.isClassNameEqual(widgetUtils.saveButton, "float-right bg-ft-img feature-toolbar-btn bg-save");
-  
+
   //cancel the locate
   widgetUtils.clickCancel();
   widgetUtils.clickCancelDialogYes();
-  
+
   //TODO seems like we should clear out the address info they set here...seems like a bug to me
-  
+
   //clear and reset text
   table.cell4.textbox.SetText("");
-  table.cell4.textbox.SetText("Denver");
-  
+  table.cell4.textbox.SetText(f.address.expected);
+
   //locate and save
   widgetUtils.clickLocate();
   widgetUtils.clickSave();
+  numUnlocated -= 1;
   Delay(100);
+
+  //TODO what happens here would be dependant upon if no more unlocated records or not
+  if (numUnlocated === 0) {
+    //init the review page and verify that the saved record was moved to locations found
+    widgetUtils.initReviewPage('found');
+    compareResults.isContentTextEqual(widgetUtils.locationsFoundLabel, 'Locations Found');
+    compareResults.isContentTextEqual(widgetUtils.locationsFoundCount, numLocated);
+  } else {
+
+  }
+  return numUnlocated;
+}
+
+function handleUnlocatedSingleField(f, numUnlocated, numLocated) {
+  //init the feature page and start editing
+  widgetUtils.initFeaturePage();
+  widgetUtils.clickEdit();
+  Delay(10);
+
+  //expand the location information
+  widgetUtils.clickExpandLocationButton();
+
+  //get the feature table
+  var table = widgetUtils.locationTable;
   
-  //init the review page and verify that the saved record was moved to locations found
-  widgetUtils.initReviewPage('found');
-  compareResults.isContentTextEqual(widgetUtils.locationsFoundLabel, 'Locations Found');
-  compareResults.isContentTextEqual(widgetUtils.locationsFoundCount, '25');
+  //verify expected text for location
+  var addressControl = table.Cell(0, 1).Panel("widget_dijit_form_ValidationTextBox_*").Panel(1).Textbox(0);
+  compareResults.isTextEqual(addressControl, f.address.actual);
+  
+  //set text and verify locate is enabled
+  addressControl.SetText(f.address.expected);
+  compareResults.isClassNameEqual(widgetUtils.locateButton, "bg-ft-img feature-toolbar-btn float-right bg-locate");
+
+  //clear text and verify locate is disabled
+  addressControl.SetText(f.address.actual);
+  compareResults.isClassNameEqual(widgetUtils.locateButton, "bg-ft-img feature-toolbar-btn float-right bg-locate-disabled");
+
+  //set text and locate
+  addressControl.SetText(f.address.expected);
+  widgetUtils.clickLocate();
+  Delay(1000);
+
+  //verify cancel and save are enabled
+  compareResults.isClassNameEqual(widgetUtils.cancelButton, "bg-ft-img feature-toolbar-btn bg-cancel");
+  compareResults.isClassNameEqual(widgetUtils.saveButton, "float-right bg-ft-img feature-toolbar-btn bg-save");
+
+  //cancel the locate
+  widgetUtils.clickCancel();
+  widgetUtils.clickCancelDialogYes();
+
+  //TODO seems like we should clear out the address info they set here...seems like a bug to me
+
+  //clear and reset text
+  addressControl.SetText("");
+  addressControl.SetText(f.address.expected);
+
+  //locate and save
+  widgetUtils.clickLocate();
+  widgetUtils.clickSave();
+  numUnlocated -= 1;
+  Delay(100);
+
+  //TODO what happens here would be dependant upon if no more unlocated records or not
+  if (numUnlocated === 0) {
+    //init the review page and verify that the saved record was moved to locations found
+    widgetUtils.initReviewPage('found');
+    compareResults.isContentTextEqual(widgetUtils.locationsFoundLabel, 'Locations Found');
+    compareResults.isContentTextEqual(widgetUtils.locationsFoundCount, numLocated);
+  } else {
+
+  }
+  return numUnlocated;
+}
+
+function handleUnlocatedMultiField(f, numUnlocated, numLocated) {
+  //init the feature page and start editing
+  widgetUtils.initFeaturePage();
+  widgetUtils.clickEdit();
+  Delay(10);
+
+  //expand the location information
+  widgetUtils.clickExpandLocationButton();
+
+  //get the feature table
+  var table = widgetUtils.featureTable;
+
+  //verify expected text for location
+  compareResults.isTextEqual(table.cell6.textbox, f.address.actual);
+  compareResults.isTextEqual(table.cell4.textbox, f.city.actual);
+  compareResults.isTextEqual(table.cell7.textbox, f.state.actual);
+
+  //set text and verify locate is enabled
+  table.cell4.textbox.SetText(f.city.expected);
+  compareResults.isClassNameEqual(widgetUtils.locateButton, "bg-ft-img feature-toolbar-btn float-right bg-locate");
+
+  //clear text and verify locate is disabled
+  table.cell4.textbox.SetText("");
+  compareResults.isClassNameEqual(widgetUtils.locateButton, "bg-ft-img feature-toolbar-btn float-right bg-locate-disabled");
+
+  //set text and locate
+  table.cell4.textbox.SetText(f.city.expected);
+  table.cell7.textbox.SetText(f.state.expected);
+  widgetUtils.clickLocate();
+  Delay(1000);
+
+  //verify cancel and save are enabled
+  compareResults.isClassNameEqual(widgetUtils.cancelButton, "bg-ft-img feature-toolbar-btn bg-cancel");
+  compareResults.isClassNameEqual(widgetUtils.saveButton, "float-right bg-ft-img feature-toolbar-btn bg-save");
+
+  //cancel the locate
+  widgetUtils.clickCancel();
+  widgetUtils.clickCancelDialogYes();
+
+  //TODO seems like we should clear out the address info they set here...seems like a bug to me
+
+  //clear and reset text
+  table.cell4.textbox.SetText("");
+  table.cell4.textbox.SetText(f.city.expected);
+
+  //locate and save
+  widgetUtils.clickLocate();
+  widgetUtils.clickSave();
+  numUnlocated -= 1;
+  Delay(100);
+
+  //TODO what happens here would be dependant upon if no more unlocated records or not
+  if (numUnlocated === 0) {
+    //init the review page and verify that the saved record was moved to locations found
+    widgetUtils.initReviewPage('found');
+    compareResults.isContentTextEqual(widgetUtils.locationsFoundLabel, 'Locations Found');
+    compareResults.isContentTextEqual(widgetUtils.locationsFoundCount, numLocated);
+  } else {
+
+  }
+  return numUnlocated;
+}
+
+function handleUnlocatedXY(f, numUnlocated, numLocated) {
+  //init the feature page and start editing
+  widgetUtils.initFeaturePage();
+  widgetUtils.clickEdit();
+  Delay(10);
+
+  //expand the location information
+  widgetUtils.clickExpandLocationButton();
+
+  //get the feature table
+  var table = widgetUtils.featureTable;
+
+  //verify expected text for location
+  compareResults.isTextEqual(table.cell6.textbox, f.address.actual);
+  compareResults.isTextEqual(table.cell4.textbox, f.city.actual);
+  compareResults.isTextEqual(table.cell7.textbox, f.state.actual);
+
+  //set text and verify locate is enabled
+  table.cell4.textbox.SetText(f.city.expected);
+  compareResults.isClassNameEqual(widgetUtils.locateButton, "bg-ft-img feature-toolbar-btn float-right bg-locate");
+
+  //clear text and verify locate is disabled
+  table.cell4.textbox.SetText("");
+  compareResults.isClassNameEqual(widgetUtils.locateButton, "bg-ft-img feature-toolbar-btn float-right bg-locate-disabled");
+
+  //set text and locate
+  table.cell4.textbox.SetText(f.city.expected);
+  table.cell7.textbox.SetText(f.state.expected);
+  widgetUtils.clickLocate();
+  Delay(1000);
+
+  //verify cancel and save are enabled
+  compareResults.isClassNameEqual(widgetUtils.cancelButton, "bg-ft-img feature-toolbar-btn bg-cancel");
+  compareResults.isClassNameEqual(widgetUtils.saveButton, "float-right bg-ft-img feature-toolbar-btn bg-save");
+
+  //cancel the locate
+  widgetUtils.clickCancel();
+  widgetUtils.clickCancelDialogYes();
+
+  //TODO seems like we should clear out the address info they set here...seems like a bug to me
+
+  //clear and reset text
+  table.cell4.textbox.SetText("");
+  table.cell4.textbox.SetText(f.city.expected);
+
+  //locate and save
+  widgetUtils.clickLocate();
+  widgetUtils.clickSave();
+  numUnlocated -= 1;
+  Delay(100);
+
+  //TODO what happens here would be dependant upon if no more unlocated records or not
+  if (numUnlocated === 0) {
+    //init the review page and verify that the saved record was moved to locations found
+    widgetUtils.initReviewPage('found');
+    compareResults.isContentTextEqual(widgetUtils.locationsFoundLabel, 'Locations Found');
+    compareResults.isContentTextEqual(widgetUtils.locationsFoundCount, numLocated);
+  } else {
+
+  }
+  return numUnlocated;
 }
 
 function dragDrop() {
@@ -168,5 +397,17 @@ function dragDrop() {
 //Clears results of previous submit operations
 function _clearResults(url) {
   //TODO write function that will hit the destination layer URL and clear the features
-
+  
+  //TODO need to grab a token
+  
+  // Define the request body JSON string
+  var requestBody = '{ "where": "1=1" }'; 
+  
+  // Create the aqHttpRequest object
+  var aqHttpRequest = aqHttp.CreatePostRequest(url + '/deleteFeatures');
+  aqHttpRequest.SetHeader("Content-Type", "application/json");
+  var aqHttpResponse = aqHttpRequest.Send(requestBody)
+  
+  Log.Message(aqHttpResponse.StatusCode);
+  Log.Message(aqHttpResponse.Text);
 }

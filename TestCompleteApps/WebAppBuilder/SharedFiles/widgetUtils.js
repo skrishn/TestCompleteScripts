@@ -110,8 +110,9 @@ var clearSettingsDialogYes;
 var clearSettingsDialogNo;
 var _addressPage;
 var singleFieldRadio;
-var singleFieldSelect;
 var multiFieldRadio;
+var singleAddrSelect;
+var locationTable;
 //TODO update all button instances to private naming converntions
 // and add a var for all public functions
 
@@ -457,221 +458,220 @@ function _initScreening(theme) {
 function _initDataAggregation(theme) {
   switch (theme) {
     case 'FoldableTheme':
-      testWidget = _layoutManager.Panel("themes_FoldableTheme_widgets_HeaderController_Widget_*").Panel(1).Panel(0);
-        
-      browseFile = function(path) {
-        var browser = Aliases.browser;
-        page = browser.pageStatemAutotestMapsqaArcgisCo;
-        page.form.label.Click(104, 16);
-        var dlgOpen = browser.dlgOpen;
-        dlgOpen.OpenFile(path);
-      }
-
-      clickDownload = function () {
-        daPanel.table.cell6.panel.panel.Click(10, 8);
-      }
-
-      initPanel = function () {
-        daPanel = page.panelWidgetsDataaggregationWidge;
-
-        _pageContainer = map.Panel("widgets_DataAggregation_Widget_20_panel").Panel(1).Panel("uniqName_13_0").Panel("widgets_DataAggregation_Widget_20").Panel("PageContainer_0");
-        viewStack = _pageContainer.Panel("jimu_dijit_ViewStack_0");
-        
-        backButton = _pageContainer.Panel(0).Table(0).Cell(0, 0);
-        clickBack = function () {
-          backButton.Click(10, 10);
-        }
-
-        nextButton = _pageContainer.Panel(0).Table(0).Cell(0, 2);
-        clickNext = function () {
-          nextButton.Click(10, 10);
-        }
-        
-        homeButton = _pageContainer.Panel(0).Table(0).Cell(0, 1).Panel(0);
-        clickHome = function () {
-          homeButton.Click(10, 10);
-          //init the response dialog
-          Delay(1000);
-          _initClearSettingsDialog();
-        }
-        
-        _initClearSettingsDialog = function () {
-          _clearSettingsDialog = _layoutManager.Panel("jimu_dijit_Popup_*");
-        
-          clearSettingsDialogYes = _clearSettingsDialog.Panel(2).Panel(2);
-          clickClearSettingsDialogYes = function () {
-            clearSettingsDialogYes.Click(5, 5);
-          }
-      
-          clearSettingsDialogNo = _clearSettingsDialog.Panel(2).Panel(0);
-          clickClearSettingsDialogNo = function () {
-            clearSettingsDialogNo.Click(5, 5);
-          }
-        }
-      }
-
-      initStartPage = function () {
-        startPage = viewStack.Panel("CriticalFacilities_StartPage_*");
-        addToMapButton = startPage.Panel(0).Panel(0);
-        clickAddToMap = function () {
-          addToMapButton.Click(10, 10);
-        }
-      }
-
-      initLocationTypePage = function () {
-
-      }
-      
-      initAddressPage = function () {
-        _addressPage = viewStack.Panel("CriticalFacilities_Addresses_*");
-        
-        singleFieldRadio = _addressPage.Table(0).Cell(2, 0).Table(0).Cell(0, 0).Panel(0).RadioButton("addr");
-        clickSingleFieldRadio = function () {
-          singleFieldRadio.Click(3, 3);
-        }
-        
-        singleFieldSelect = _addressPage.Table(0).Cell(2, 0).Table(0).Cell(2, 0).Table(0).Cell(0, 1).Table(0).Cell(0, 0);
-        clickSingleFieldSelect = function () {
-          singleFieldSelect.Click(3, 3);
-        }
-        
-        multiFieldRadio = _addressPage.Table(0).Cell(3, 0).Table(0).Cell(0, 0).Panel(0).RadioButton("addr");
-        clickMultiFieldRadio = function () {
-          multiFieldRadio.Click(3, 3);
-        }
-      }
-
-      initReviewPage = function (type) {
-        reviewPage = viewStack.Panel("CriticalFacilities_Review_*");
-        //TODO if the paths are the same regardless of what it starts with this switch would not be necessary
-        switch (type)
-        {
-          case 'found':
-            locationsFoundLabel = reviewPage.Table(0).Cell(6, 0).Panel(0);
-            locationsFoundCount = reviewPage.Table(0).Cell(6, 1).Panel(0);
-            break;
-        
-          case 'notFound':
-            locationsNotFoundLabel = reviewPage;
-            locationsNotFoundCount = reviewPage;
-            break;
-          
-          case 'duplicate':
-            locationsDuplicateLabel = reviewPage;
-            locationsDuplicateCount = reviewPage;      
-            break;
-        
-          case 'found-notFound':
-            locationsFoundLabel = reviewPage.Table(0).Cell(6, 0).Panel(0);
-            locationsFoundCount = reviewPage.Table(0).Cell(6, 1).Panel(0);
-            locationsNotFoundLabel = reviewPage.Table(0).Cell(2, 0).Panel(0);
-            locationsNotFoundCount = reviewPage.Table(0).Cell(2, 1).Panel(0);
-            break;
-            
-          case 'found-duplicate':
-            locationsFoundLabel = reviewPage;
-            locationsFoundCount = reviewPage;
-            locationsDuplicateLabel = reviewPage;
-            locationsDuplicateCount = reviewPage;
-            break;
-        
-          case 'notFound-duplicate':
-            locationsNotFoundLabel = reviewPage;
-            locationsNotFoundCount = reviewPage;
-            locationsDuplicateLabel = reviewPage;
-            locationsDuplicateCount = reviewPage;
-            break;
-          
-          case 'found-notFound-duplicate':
-            locationsFoundLabel = reviewPage;
-            locationsFoundCount = reviewPage;
-            locationsNotFoundLabel = reviewPage;
-            locationsNotFoundCount = reviewPage;
-            locationsDuplicateLabel = reviewPage;
-            locationsDuplicateCount = reviewPage;      
-            break;
-        
-        }
-      }
-
-      initFeatureListPage = function () {
-
-      }
-
-      initFeaturePage = function () {
-        featureTable = daPanel.table;
-      
-        featurePageLabel = viewStack.Panel("CriticalFacilities_Feature_0").Table(0).Cell(0, 0).Panel(0);
-        
-        locateButton = viewStack.Panel("CriticalFacilities_Feature_*").Panel(1).Table(0).Cell(0, 2).Panel(0);
-        clickLocate = function () {         
-          locateButton.Click(8, 10);
-        }
-        
-        cancelButton = viewStack.Panel("CriticalFacilities_Feature_*").Table(1).Cell(0, 1).Panel(0).Panel("FeatureToolbar_0").Table(0).Cell(0, 1).Panel(0);
-        clickCancel = function () {
-          cancelButton.Click(8, 10);
-          Delay(100);
-          _initCancelEditDialog();
-        }
-        
-        saveButton = viewStack.Panel("CriticalFacilities_Feature_*").Table(1).Cell(0, 1).Panel(0).Panel("FeatureToolbar_0").Table(0).Cell(0, 2).Panel(0);
-        clickSave = function () {
-           saveButton.Click(8, 10);
-        }
-        
-        editButton = viewStack.Panel("CriticalFacilities_Feature_*").Table(1).Cell(0, 1).Panel(0).Panel("FeatureToolbar_0").Table(0).Cell(0, 0).Panel(0);
-        clickEdit = function () {
-          editButton.Click(8, 10);
-        }
-        
-        syncButton = viewStack.Panel("CriticalFacilities_Feature_*").Panel(1).Table(0).Cell(0, 1).Panel(0);
-        clickSync = function () {
-          syncButton.Click(8, 10);
-        }
-
-        expandLocationInfoButton = viewStack.Panel("CriticalFacilities_Feature_*").Table(3).Cell(0, 1)
-        clickExpandLocationButton = function(expanded) {
-          expandLocationInfoButton.Click(7, 5);
-        }
-        
-        expandLocationInfoRow = viewStack.Panel("CriticalFacilities_Feature_*").Table(3).Cell(0, 0);
-        clickExpandLocationRow = function(expanded) {
-          expandLocationInfoRow.Click(10, 10);
-        }
-        
-        expandFeatureInfoButton = viewStack.Panel("CriticalFacilities_Feature_*").Table(2).Cell(0, 1).Panel(0);
-        clickExpandFeatureButton = function(expanded) {
-          expandFeatureInfoButton.Click(10, 10);
-        }
-        
-        expandFeatureInfoRow = viewStack.Panel("CriticalFacilities_Feature_*").Table(2).Cell(0, 0);
-        clickExpandFeatureRow = function(expanded) {
-          expandFeatureInfoRow.Click(10, 10);
-        }
-             
-        _initCancelEditDialog = function () {
-          _cancelDialog = _layoutManager.Panel("jimu_dijit_Popup_0");
-          cancelDialogYes = _cancelDialog.Panel(2).Panel(2);
-          cancelDialogNo = _cancelDialog.Panel(2).Panel(0);
-          cancelDialogTitle = _cancelDialog.Panel(0).TextNode(0);
-          cancelDialogMessage = _cancelDialog.Panel(1).Panel(0);
-          cancelDialogExit = _cancelDialog.Panel(0).Panel(0);
-        }
-        
-        clickCancelDialogYes = function () {
-          cancelDialogYes.Click(5, 5);
-        }
-        
-        clickCancelDialogNo = function () {
-          cancelDialogNo.Click(5, 5);
-        }
-        
-        clickCancelDialogExit = function () {
-          cancelDialogExit.Click(5, 5);
-        }      
-      }
+      this._initDAFoldable();
       break;
+  }
+}
+
+function _initDAFoldable() {
+  testWidget = _layoutManager.Panel("themes_FoldableTheme_widgets_HeaderController_Widget_*").Panel(1).Panel(0);
+
+  browseFile = function (path) {
+    var browser = Aliases.browser;
+    page = browser.pageStatemAutotestMapsqaArcgisCo;
+    page.form.label.Click(104, 16);
+    var dlgOpen = browser.dlgOpen;
+    dlgOpen.OpenFile(path);
+  }
+
+  clickDownload = function () {
+    daPanel.table.cell6.panel.panel.Click(10, 8);
+  }
+
+  initPanel = function () {
+    daPanel = page.panelWidgetsDataaggregationWidge;
+
+    _pageContainer = map.Panel("widgets_DataAggregation_Widget_20_panel").Panel(1).Panel("uniqName_13_0").Panel("widgets_DataAggregation_Widget_20").Panel("PageContainer_0");
+    viewStack = _pageContainer.Panel("jimu_dijit_ViewStack_0");
+
+    backButton = _pageContainer.Panel(0).Table(0).Cell(0, 0);
+    clickBack = function () {
+      backButton.Click(10, 10);
+    }
+
+    nextButton = _pageContainer.Panel(0).Table(0).Cell(0, 2);
+    clickNext = function () {
+      nextButton.Click(10, 10);
+    }
+
+    homeButton = _pageContainer.Panel(0).Table(0).Cell(0, 1).Panel(0);
+    clickHome = function () {
+      homeButton.Click(10, 10);
+      //init the response dialog
+      Delay(1000);
+      _initClearSettingsDialog();
+    }
+
+    _initClearSettingsDialog = function () {
+      _clearSettingsDialog = _layoutManager.Panel("jimu_dijit_Popup_*");
+
+      clearSettingsDialogYes = _clearSettingsDialog.Panel(2).Panel(2);
+      clickClearSettingsDialogYes = function () {
+        clearSettingsDialogYes.Click(5, 5);
+      }
+
+      clearSettingsDialogNo = _clearSettingsDialog.Panel(2).Panel(0);
+      clickClearSettingsDialogNo = function () {
+        clearSettingsDialogNo.Click(5, 5);
+      }
+    }
+  }
+
+  initStartPage = function () {
+    startPage = viewStack.Panel("CriticalFacilities_StartPage_*");
+    addToMapButton = startPage.Panel(0).Panel(0);
+    clickAddToMap = function () {
+      addToMapButton.Click(10, 10);
+    }
+  }
+
+  initLocationTypePage = function () {
+
+  }
+
+  initAddressPage = function () {
+    _addressPage = viewStack.Panel("CriticalFacilities_Addresses_*");
+    
+    singleFieldRadio = _addressPage.Table(0).Cell(2, 0).Table(0).Cell(0, 0).Panel(0).RadioButton("addr");
+    clickSingleFieldRadio = function () {
+      singleFieldRadio.Click(3, 3);
+    }
+    singleAddrSelect = _addressPage.Table(0).Cell(2, 0).Table(0).Cell(2, 0).Table(0).Cell(0, 1).Table(0);
+
+    multiFieldRadio = _addressPage.Table(0).Cell(3, 0).Table(0).Cell(0, 0).Panel(0).RadioButton("addr");
+    clickMultiFieldRadio = function () {
+      multiFieldRadio.Click(3, 3);
+    }
+  }
+
+  initReviewPage = function (type) {
+    reviewPage = viewStack.Panel("CriticalFacilities_Review_*");
+    //TODO if the paths are the same regardless of what it starts with this switch would not be necessary
+    switch (type) {
+      case 'found':
+        locationsFoundLabel = reviewPage.Table(0).Cell(6, 0).Panel(0);
+        locationsFoundCount = reviewPage.Table(0).Cell(6, 1).Panel(0);
+        break;
+      case 'notFound':
+        locationsNotFoundLabel = reviewPage;
+        locationsNotFoundCount = reviewPage;
+        break;
+      case 'duplicate':
+        locationsDuplicateLabel = reviewPage;
+        locationsDuplicateCount = reviewPage;
+        break;
+      case 'found-notFound':
+        locationsFoundLabel = reviewPage.Table(0).Cell(6, 0).Panel(0);
+        locationsFoundCount = reviewPage.Table(0).Cell(6, 1).Panel(0);
+        locationsNotFoundLabel = reviewPage.Table(0).Cell(2, 0).Panel(0);
+        locationsNotFoundCount = reviewPage.Table(0).Cell(2, 1).Panel(0);
+        break;
+      case 'found-duplicate':
+        locationsFoundLabel = reviewPage;
+        locationsFoundCount = reviewPage;
+        locationsDuplicateLabel = reviewPage;
+        locationsDuplicateCount = reviewPage;
+        break;
+      case 'notFound-duplicate':
+        locationsNotFoundLabel = reviewPage;
+        locationsNotFoundCount = reviewPage;
+        locationsDuplicateLabel = reviewPage;
+        locationsDuplicateCount = reviewPage;
+        break;
+      case 'found-notFound-duplicate':
+        locationsFoundLabel = reviewPage;
+        locationsFoundCount = reviewPage;
+        locationsNotFoundLabel = reviewPage;
+        locationsNotFoundCount = reviewPage;
+        locationsDuplicateLabel = reviewPage;
+        locationsDuplicateCount = reviewPage;
+        break;
+    }
+  }
+
+  initFeatureListPage = function () {
+
+  }
+
+  initFeaturePage = function () {
+    var _featPage = viewStack.Panel("CriticalFacilities_Feature_*");
+    var _editToolbar = _featPage.Table(1).Cell(0, 1).Panel(0).Panel("FeatureToolbar_*").Table(0);
+
+    //Public controls
+    featureTable = daPanel.table;
+
+    featurePageLabel = _featPage.Table(0).Cell(0, 0).Panel(0);  
+    locationTable = _featPage.Panel(1).Table(1);
+    locateButton = _featPage.Panel(1).Table(0).Cell(0, 2).Panel(0);
+    syncButton = _featPage.Panel(1).Table(0).Cell(0, 1).Panel(0);
+    expandLocationInfoButton = _featPage.Table(3).Cell(0, 1);
+    expandLocationInfoRow = _featPage.Table(3).Cell(0, 0);
+    expandFeatureInfoButton = _featPage.Table(2).Cell(0, 1).Panel(0);
+    expandFeatureInfoRow = _featPage.Table(2).Cell(0, 0);
+
+    cancelButton = _editToolbar.Cell(0, 1).Panel(0);
+    saveButton = _editToolbar.Cell(0, 2).Panel(0);
+    editButton = _editToolbar.Cell(0, 0).Panel(0);
+
+    //Public functions
+    clickLocate = function () {
+      locateButton.Click(8, 10);
+    }
+
+    clickCancel = function () {
+      cancelButton.Click(8, 10);
+      Delay(100);
+      _initCancelEditDialog();
+    }
+
+    _initCancelEditDialog = function () {
+      _cancelDialog = _layoutManager.Panel("jimu_dijit_Popup_*");
+      cancelDialogYes = _cancelDialog.Panel(2).Panel(2);
+      cancelDialogNo = _cancelDialog.Panel(2).Panel(0);
+      cancelDialogTitle = _cancelDialog.Panel(0).TextNode(0);
+      cancelDialogMessage = _cancelDialog.Panel(1).Panel(0);
+      cancelDialogExit = _cancelDialog.Panel(0).Panel(0);
+    }
+
+    clickSave = function () {
+      saveButton.Click(8, 10);
+    }
+
+    clickEdit = function () {
+      editButton.Click(8, 10);
+    }
+
+    clickSync = function () {
+      syncButton.Click(8, 10);
+    }
+
+    clickExpandLocationButton = function (expanded) {
+      expandLocationInfoButton.Click(7, 5);
+    }
+
+    clickExpandLocationRow = function (expanded) {
+      expandLocationInfoRow.Click(10, 10);
+    }
+
+    clickExpandFeatureButton = function (expanded) {
+      expandFeatureInfoButton.Click(10, 10);
+    }
+
+    clickExpandFeatureRow = function (expanded) {
+      expandFeatureInfoRow.Click(10, 10);
+    }
+
+    clickCancelDialogYes = function () {
+      cancelDialogYes.Click(5, 5);
+    }
+
+    clickCancelDialogNo = function () {
+      cancelDialogNo.Click(5, 5);
+    }
+
+    clickCancelDialogExit = function () {
+      cancelDialogExit.Click(5, 5);
+    }
   }
 }
 
