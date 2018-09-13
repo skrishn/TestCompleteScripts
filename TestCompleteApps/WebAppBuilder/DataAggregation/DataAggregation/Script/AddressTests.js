@@ -19,10 +19,10 @@ function test(themeName) {
   //Test single field address
   //_testCSV(csvFiles.singleFieldAddress, false);
   
-  _clearResults(csvFiles.singleFieldAddress.url);
+  //_clearResults(csvFiles.singleFieldAddress.url);
 
   //Test duplicates
-  _testCSV(csvFiles.duplicate, false);
+  //_testCSV(csvFiles.duplicate, false);
 
   //Test XY
   _testCSV(csvFiles.xy, true);
@@ -49,10 +49,21 @@ function _daWorkflow(csvInfo) {
   widgetUtils.clickNext();
   Delay(10);
 
-  //click to locate with address
-  widgetUtils.clickNext();
-  Delay(10);
-  widgetUtils.initAddressPage();
+  widgetUtils.initLocationTypePage();
+  switch (csvInfo.locationType) {
+    case 'coordinate':
+      widgetUtils.clickCoordinate();
+      widgetUtils.clickNext();
+      widgetUtils.initCoordinatePage();
+      break;
+    case 'address':
+      //click to locate with address
+      //widgetUtils.clickAddress();
+      widgetUtils.clickNext();
+      widgetUtils.initAddressPage();
+      break;
+  }
+
 
   switch (csvInfo.type) {
     case 'duplicate':
@@ -66,7 +77,8 @@ function _daWorkflow(csvInfo) {
       widgetUtils.clickMultiFieldRadio();
       break;
     case 'xy':
-
+      //could also set fields here first
+      widgetUtils.clickNext();
       break;
   }
 
@@ -89,21 +101,33 @@ function _daWorkflow(csvInfo) {
   var numLocated = csvInfo.numExpectedMatched;
   var numUnlocated = csvInfo.numExpectedUnMatched;
   var numDuplicate = csvInfo.numExpectedDuplicate;
-  //init the review page
+  //init the review page and compare actual and expected result counts
   if (numLocated > 0 && numUnlocated > 0 && numDuplicate > 0) {
     widgetUtils.initReviewPage('found-notFound-duplicate');
+    compareResults.isContentTextEqual(widgetUtils.locationsFoundCount, numLocated);
+    compareResults.isContentTextEqual(widgetUtils.locationsNotFoundCount, numUnlocated);
+    compareResults.isContentTextEqual(widgetUtils.locationsDuplicateCount, numDuplicate);
   } else if (numLocated > 0 && numUnlocated > 0) {
     widgetUtils.initReviewPage('found-notFound');
+    compareResults.isContentTextEqual(widgetUtils.locationsFoundCount, numLocated);
+    compareResults.isContentTextEqual(widgetUtils.locationsNotFoundCount, numUnlocated);
   } else if (numUnlocated > 0 && numDuplicate > 0) {
     widgetUtils.initReviewPage('notFound-duplicate');
+    compareResults.isContentTextEqual(widgetUtils.locationsNotFoundCount, numUnlocated);
+    compareResults.isContentTextEqual(widgetUtils.locationsDuplicateCount, numDuplicate);
   } else if (numLocated > 0 && numDuplicate > 0) {
     widgetUtils.initReviewPage('found-duplicate');
+    compareResults.isContentTextEqual(widgetUtils.locationsFoundCount, numLocated);
+    compareResults.isContentTextEqual(widgetUtils.locationsDuplicateCount, numDuplicate);
   } else if (numLocated > 0) {
     widgetUtils.initReviewPage('found');
+    compareResults.isContentTextEqual(widgetUtils.locationsFoundCount, numLocated);
   } else if (numUnlocated > 0) {
     widgetUtils.initReviewPage('notFound');
+    compareResults.isContentTextEqual(widgetUtils.locationsNotFoundCount, numUnlocated);
   } else if (numDuplicate > 0) {
     widgetUtils.initReviewPage('duplicate');
+    compareResults.isContentTextEqual(widgetUtils.locationsDuplicateCount, numDuplicate);
   }
 
   //go into locations not found
@@ -121,7 +145,6 @@ function _daWorkflow(csvInfo) {
     unlocatedFeatures.forEach(f => {
       //handle the unlocated feature
       numLocated += 1;
-
       switch (csvInfo.type) {
         case 'duplicate':
           _numUnlocated = handleUnlocatedDuplicate(f, _numUnlocated, numLocated);
@@ -137,6 +160,14 @@ function _daWorkflow(csvInfo) {
           break;
       }
     });
+  }
+
+  if (csvInfo.numExpectedDuplicate > 0) {
+    //TODO some workflow for duplicate
+  }
+
+  if (csvInfo.numExpectedMatched > 0) {
+    //TODO some workflow for matched
   }
 }
 

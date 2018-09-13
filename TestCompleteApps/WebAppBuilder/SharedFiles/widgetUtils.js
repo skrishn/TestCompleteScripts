@@ -11,6 +11,7 @@ var _zoom;
 
 //Public member
 
+
 //Current widget for testing (these are test widget specific)
 var testWidget;
 var layersContainer;
@@ -113,6 +114,12 @@ var singleFieldRadio;
 var multiFieldRadio;
 var singleAddrSelect;
 var locationTable;
+var coordinateRadio;
+var addressRadio;
+var _locationTypePage;
+var _coordinatePage;
+var xToolbox;
+var yToolbox;
 //TODO update all button instances to private naming converntions
 // and add a var for all public functions
 
@@ -526,7 +533,17 @@ function _initDAFoldable() {
   }
 
   initLocationTypePage = function () {
+    _locationTypePage = viewStack.Panel("CriticalFacilities_LocationType_*");
 
+    //addressRadio = _locationTypePage.Table(0).Cell(?, ?);
+    clickAddress = function () {
+      addressRadio.Click(3, 3);
+    }
+    
+    coordinateRadio = _locationTypePage.Table(0).Cell(4, 0);
+    clickCoordinate = function () {
+      coordinateRadio.Click(3, 3);
+    }
   }
 
   initAddressPage = function () {
@@ -542,6 +559,14 @@ function _initDAFoldable() {
     clickMultiFieldRadio = function () {
       multiFieldRadio.Click(3, 3);
     }
+  }
+
+  initCoordinatePage = function () {
+    _coordinatePage = viewStack.Panel("CriticalFacilities_Coordinates_*");
+
+    xToolbox = _coordinatePage.Table(0).Cell(2, 1).Table(0).Cell(0, 0).Panel(0).TextNode(0);
+
+    yToolbox = _coordinatePage.Table(0).Cell(3, 1).Table(0).Cell(0, 0).Panel(0).TextNode(0);
   }
 
   initReviewPage = function (type) {
